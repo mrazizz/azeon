@@ -99,11 +99,11 @@ const config: Config = {
           items: [
             {
               label: 'The Millennium Prize',
-              to: '/docs/intro-millennium-prize',
+              to: '/p-vs-np/foundations/introduction-to-the-millennium-prize',
             },
             {
-              label: 'Complexity Zoo',
-              to: '/docs/category/complexity-zoo',
+              label: 'P vs NP',
+              to: '/p-vs-np/foundations',
             },
             {
               label: 'Azizdevs.',
