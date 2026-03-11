@@ -1,0 +1,13 @@
+{
+  "label": "Foundations",
+  "position": 1,
+  "collapsed": false,
+  "collapsible": true,
+  "link": {
+    "type": "generated-index",
+    "title": "Phase 1: Foundations",
+    "description": "Before diving into the P vs NP problem itself, we need to build the language. This phase covers what algorithms are, how Turing machines model computation, what time complexity means, and how mathematicians formally define the classes P and NP. Every later phase depends on this vocabulary.",
+    "slug": "/foundations",
+    "keywords": ["algorithms", "turing machine", "complexity", "big-o", "P", "NP"]
+  }
+}
