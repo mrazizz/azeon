@@ -42,11 +42,11 @@ const STATS = [
 ];
 
 const ACHIEVEMENTS = [
-  { icon: '🏆', text: 'Matric — 1127/1200, perfect score in CS' },
-  { icon: '🧩', text: 'Rubik\'s Cube solver — under 45 seconds' },
-  { icon: '💻', text: 'Freelance web dev & graphic design since age 14' },
-  { icon: '🏢', text: 'Founder of Azizdevs — digital agency' },
-  { icon: '📖', text: 'Founder of Azeon — public knowledge platform' },
+  { icon: '🏆', text: 'Perfect CS score in Matric' },
+  { icon: '🧩', text: 'Rubik\'s Cube solver under 45 seconds' },
+  { icon: '💻', text: 'Web development & graphic designing since age 14' },
+  { icon: '🏢', text: 'Founder of Azizdevs' },
+  { icon: '📖', text: 'Founder of Azeon' },
 ];
 
 const SAFE_ITEMS = [
