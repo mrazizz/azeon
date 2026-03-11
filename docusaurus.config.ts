@@ -123,8 +123,8 @@ const config: Config = {
               href: '/blog',
             },
             {
-              label: 'Email',
-              href: 'mailto:imrmaziz@gmail.com',
+              label: 'Instagram',
+              href: 'https://www.instagram.com/azeon.io',
             },
           ],
         },
