@@ -198,8 +198,8 @@ function WhatIsAzeon() {
             </div>
             <div className="az-diagram__qmark">
               <KaTeX math="\overset{?}{=}" />
+            </div>
           </div>
-        </div>
         </div>
       </div>
     </section>
