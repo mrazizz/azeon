@@ -1,6 +1,14 @@
 import React, { useState } from 'react';
 import Layout from '@theme/Layout';
 import Link from '@docusaurus/Link';
+import katex from 'katex';
+
+/* ─── KaTeX helper ──────────────────────────────────────── */
+
+function KaTeX({ math, display = false, style }: { math: string; display?: boolean; style?: React.CSSProperties }) {
+  const html = katex.renderToString(math, { throwOnError: false, displayMode: display });
+  return <span style={style} dangerouslySetInnerHTML={{ __html: html }} />;
+}
 
 /* ─── Data ─────────────────────────────────────────────── */
 
@@ -184,10 +192,14 @@ function WhatIsAzeon() {
               <span className="az-diagram__ring-label">NP</span>
             </div>
             <div className="az-diagram__core">
-              <span className="az-diagram__core-label">𝒫</span>
+              <span className="az-diagram__core-label">
+                <KaTeX math="\mathcal{P}" />
+              </span>
             </div>
-            <div className="az-diagram__qmark">≟</div>
+            <div className="az-diagram__qmark">
+              <KaTeX math="\overset{?}{=}" />
           </div>
+        </div>
         </div>
       </div>
     </section>
@@ -290,7 +302,7 @@ function StakesSection() {
         </div>
         <div className="az-stakes__grid">
           <div className="az-stakes__card az-stakes__card--safe">
-            <div className="az-stakes__eq">𝒫 ≠ 𝒩𝒫</div>
+            <div className="az-stakes__eq"><KaTeX math="\mathcal{P} \neq \mathcal{NP}" /></div>
             <span className="az-stakes__label">The Protected World</span>
             {SAFE_ITEMS.map(item => (
               <div key={item} className="az-stakes__item">
@@ -300,7 +312,7 @@ function StakesSection() {
             ))}
           </div>
           <div className="az-stakes__card az-stakes__card--danger">
-            <div className="az-stakes__eq">𝒫 = 𝒩𝒫</div>
+            <div className="az-stakes__eq"><KaTeX math="\mathcal{P} = \mathcal{NP}" /></div>
             <span className="az-stakes__label">The Shattered World</span>
             {DANGER_ITEMS.map(item => (
               <div key={item} className="az-stakes__item">

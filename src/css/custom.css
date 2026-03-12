@@ -570,17 +570,18 @@ code, pre, kbd, samp {
 .az-diagram__ring {
   position: absolute;
   border-radius: 50%;
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  padding-top: 0.8rem;
   animation: az-pulse-ring 4s ease-in-out infinite;
 }
 
 .az-diagram__ring-label {
+  position: absolute;
+  top: -1.05rem;
+  left: 50%;
+  transform: translateX(-50%);
   font-family: var(--ifm-font-family-monospace);
   font-size: 0.6rem;
   letter-spacing: 0.1em;
+  white-space: nowrap;
 }
 
 .az-diagram__ring--exp {
