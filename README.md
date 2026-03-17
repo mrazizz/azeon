@@ -63,11 +63,11 @@ New posts are published **daily**. The full archive lives on the Azeon website �
 
 ```
 azeon/
-├── p-vs-np/              # Docusaurus site source
-│   ├── foundations/      # Individual research posts
-│   ├── np-completeness/      # Background theory & definitions
-│   └── complexity-zoo/      # Proofs, notation, references
-├── static/            # Assets
+├── p-vs-np/
+│   ├── foundations/
+│   ├── np-completeness/
+│   └── complexity-zoo/
+├── static/
 └── docusaurus.config.js
 ```
 
