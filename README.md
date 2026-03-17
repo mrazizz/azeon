@@ -1,63 +1,122 @@
-# Azeon
+<div align="center">
 
-**Hard ideas. Documented in public. From first principles.**
+<br/>
 
-Azeon is a public knowledge platform — a place where complex topics get documented properly, starting from zero, written while being learned rather than after the fact. Not a course. Not a blog. A structured, ongoing record of understanding built in the open.
+```
+ █████╗ ███████╗███████╗ ██████╗ ███╗   ██╗
+██╔══██╗╚══███╔╝██╔════╝██╔═══██╗████╗  ██║
+███████║  ███╔╝ █████╗  ██║   ██║██╔██╗ ██║
+██╔══██║ ███╔╝  ██╔══╝  ██║   ██║██║╚██╗██║
+██║  ██║███████╗███████╗╚██████╔╝██║ ╚████║
+╚═╝  ╚═╝╚══════╝╚══════╝ ╚═════╝ ╚═╝  ╚═══╝
+```
 
----
+### *An independent, public investigation into the P vs NP problem.*
 
-## The Current Project: P vs NP Explained
+[![Posts](https://img.shields.io/badge/Posts-Daily-black?style=flat-square)](https://mrazizz.github.io/azeon/p-vs-np/foundations)
+[![Status](https://img.shields.io/badge/Status-Active-brightgreen?style=flat-square)]()
+[![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)]()
+[![Instagram](https://img.shields.io/badge/Follow-@azeon.io-E1306C?style=flat-square&logo=instagram)](https://instagram.com/azeon.io)
 
-The first and flagship project is an 80-post documentation series on **P vs NP** — the most important unsolved problem in computer science, and one of the seven Millennium Prize Problems carrying a $1,000,000 bounty.
+<br/>
 
-The series runs across seven phases:
-
-| Phase | Title | Posts |
-|-------|-------|-------|
-| 01 | Foundations | 10 |
-| 02 | NP-Completeness | 14 |
-| 03 | Complexity Zoo | 10 |
-| 04 | Failed Proofs | 16 |
-| 05 | Real-World Impact | 12 |
-| 06 | Heuristics | 12 |
-| 07 | Final Verdict | 6 |
-
-It starts from the definition of an algorithm and ends at the frontiers of complexity theory research. No prerequisites. Every concept is built up from scratch.
-
-**Start reading → [Introduction to the Millennium Prize](https://mrazizz.github.io/azeon/p-vs-np/foundations/introduction-to-the-millennium-prize)**
+</div>
 
 ---
 
-## What Makes This Different
+## What is Azeon?
 
-Most resources on P vs NP fall into one of two failure modes: academic papers written for people who already know the field, or pop-science explanations so loose they're almost misleading.
+**Azeon** is an open research log — one student's documented attempt to seriously engage with the **P vs NP problem**, one of the seven Millennium Prize Problems in mathematics and arguably the most important unsolved question in computer science.
 
-Azeon is neither. Every post assumes only curiosity. Every symbol gets explained before it gets used. Every analogy is chosen because it actually works, not because it sounds impressive.
+This is not a textbook summary. It's a living archive of:
 
-The documentation is written the way a student writes — working through confusion in real time, being honest when something isn't clear yet, and building understanding post by post rather than presenting a finished picture.
+- Original proof attempts and where they break down
+- Analysis of complexity class boundaries
+- Logical contradictions encountered during investigation
+- The questions nobody has cleanly answered yet
 
----
-
-## Philosophy
-
-There is no problem without a solution. The solution exists first — the problem is just our failure to reach it yet. That applies to P vs NP as much as anything else. The answer is already fixed, already determined. We just haven't built the mathematics to reach it yet.
-
-That's not a reason to feel defeated. That's a reason to keep documenting.
+Everything is documented in public, in real time, as the research happens.
 
 ---
 
-## What's Next
+## Why This Exists
 
-P vs NP is the first project. More documentation series and essays will be added as they're written — new topics, new hard ideas, same approach: start from zero, build up correctly, publish in public.
+Most research on P vs NP happens behind paywalls, inside universities, or in papers dense enough to require a PhD to read. Very little of the *process* — the dead ends, the restructured assumptions, the moments of clarity — ever gets published.
 
----
+Azeon exists to change that, at least for one researcher.
 
-## The Platform
+I started this as a first-year ICS student in Lahore, Pakistan. No lab. No supervisor. No institutional backing. Just a problem I couldn't stop thinking about, and the decision to work through it in public.
 
-**Website:** [mrazizz.github.io/azeon](https://mrazizz.github.io/azeon)  
-**Founder blog:** [mrazizz.github.io/azeon/blog](https://mrazizz.github.io/azeon/blog)  
-**Instagram:** [@azeon.io](https://www.instagram.com/azeon.io)
+If I'm wrong, the archive will show exactly where and why. If something interesting emerges, it'll be here first.
 
 ---
 
-*Azeon is an open documentation project. If you find an error or want to suggest an improvement, open an issue.*
+## Research Log
+
+New posts are published **daily**. The full archive lives on the Azeon website — every proof attempt, contradiction, and insight, in the order it happened.
+
+**[Read the research →](https://mrazizz.github.io/azeon/p-vs-np/foundations)**
+
+---
+
+## Repository Structure
+
+```
+azeon/
+├── p-vs-np/              # Docusaurus site source
+│   ├── foundations/      # Individual research posts
+│   ├── np-completeness/      # Background theory & definitions
+│   └── complexity-zoo/      # Proofs, notation, references
+├── static/            # Assets
+└── docusaurus.config.js
+```
+
+---
+
+## Running Locally
+
+```bash
+git clone https://github.com/mrazizz/azeon.git
+cd azeon
+npm install
+npm run start
+```
+
+The site will be live at `http://localhost:3000`.
+
+---
+
+## Follow the Research
+
+This project is updated regularly. The best ways to follow along:
+
+- ⭐ **Star this repo** — you'll get notified of new posts
+- 📸 **Instagram**: [@azeon.io](https://instagram.com/azeon.io) — research updates & behind-the-scenes
+- 🌐 **Website**: [Azeon](https://mrazizz.github.io/azeon) — full documentation
+
+---
+
+## Contribution
+
+This is a **solo research project**. I'm not accepting pull requests or co-authors at this stage — the integrity of the investigation depends on it being a single, consistent line of reasoning.
+
+That said, if you spot a logical error or have a reference worth reading, open an **Issue**. Serious feedback is always welcome.
+
+---
+
+## About the Researcher
+
+**Muhammad Aziz** — First-year ICS student (CS, Physics, Mathematics) at Forman Christian College, Lahore, Pakistan. Founder of [Azizdevs](https://github.com/azizdevs). Started asking questions about computational complexity that didn't have easy answers. Still asking them.
+
+---
+
+<div align="center">
+
+*"The question is not whether P equals NP.*
+*The question is what we learn while finding out."*
+
+<br/>
+
+[![Star this repo](https://img.shields.io/github/stars/mrazizz/azeon?style=social)](https://github.com/mrazizz/azeon)
+
+</div>
