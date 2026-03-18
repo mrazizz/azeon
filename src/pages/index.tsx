@@ -29,7 +29,7 @@ interface Phase {
 }
 
 const PHASES: Phase[] = [
-  { num: '01', title: 'Foundations', slug: '/p-vs-np/foundations', color: 'var(--az-phase-01)', desc: 'Algorithms, Turing machines, Big-O notation, and the formal definitions of P and NP.', publishedPosts: 4, totalPosts: 10 },
+  { num: '01', title: 'Foundations', slug: '/p-vs-np/foundations', color: 'var(--az-phase-01)', desc: 'Algorithms, Turing machines, Big-O notation, and the formal definitions of P and NP.', publishedPosts: 5, totalPosts: 10 },
   { num: '02', title: 'NP-Completeness', slug: '/p-vs-np/np-completeness', color: 'var(--az-phase-02)', desc: 'Reductions, Cook-Levin theorem, SAT, TSP, Graph Coloring, Sudoku, and the NP-Complete zoo.', publishedPosts: 0, totalPosts: 14 },
   { num: '03', title: 'Complexity Zoo', slug: '/p-vs-np/complexity-zoo', color: 'var(--az-phase-03)', desc: "coNP, PSPACE, EXP, randomized algorithms, quantum computing, and Shor's algorithm.", publishedPosts: 0, totalPosts: 10 },
   { num: '04', title: 'Failed Proofs', slug: '/p-vs-np/failed-proofs', color: 'var(--az-phase-04)', desc: 'Relativization, Natural Proofs, Algebrization, GCT — every barrier that blocks a proof.', publishedPosts: 0, totalPosts: 16 },
@@ -126,7 +126,7 @@ function Hero() {
           to="/p-vs-np/foundations/introduction-to-the-millennium-prize"
           className="az-btn az-btn--primary"
         >
-          Read the Flagship Project →
+          Read P vs NP
         </Link>
         <Link to="/blog" className="az-btn az-btn--ghost">
           Visit the Founder Blog

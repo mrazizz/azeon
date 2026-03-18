@@ -1,32 +1,41 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 
 const RULES = [
   { mode: 'Checking', read: '1', write: '1', next: 'Checking', dir: 'Right' },
-  { mode: 'Checking', read: '_', write: '_', next: 'Accept', dir: 'Stay' },
-  { mode: 'Checking', read: '0', write: '0', next: 'Reject', dir: 'Stay' },
+  { mode: 'Checking', read: '_', write: '_', next: 'Accept',   dir: 'Stay'  },
+  { mode: 'Checking', read: '0', write: '0', next: 'Reject',   dir: 'Stay'  },
 ];
 
 const INIT_TAPE = ['1', '1', '0', '1', '_', '_', '_'];
-const VISIBLE = 7;
-const CELL = 52;
+const VISIBLE      = 7;
+const GAP          = 6;
+const CELL_HEIGHT  = 52;
+const ELLIPSIS     = 20; // approximate width each "…" takes
 
 function init() {
-  return { tape: [...INIT_TAPE], head: 0, mode: 'Checking', history: [], log: 'Press Step → to begin.' };
+  return {
+    tape: [...INIT_TAPE],
+    head: 0,
+    mode: 'Checking',
+    history: [],
+    log: 'Press Step → to begin.',
+  };
 }
 
 function stepState(s) {
   if (s.mode === 'Accept' || s.mode === 'Reject') return s;
-  const sym = s.tape[s.head] ?? '_';
+  const sym  = s.tape[s.head] ?? '_';
   const rule = RULES.find(r => r.mode === s.mode && r.read === sym);
   if (!rule) return { ...s, log: 'No matching rule — halted.' };
   const tape = [...s.tape];
   tape[s.head] = rule.write;
   let head = s.head;
   if (rule.dir === 'Right') head++;
-  if (rule.dir === 'Left') head = Math.max(0, head - 1);
-  if (head >= tape.length) tape.push('_');
+  if (rule.dir === 'Left')  head = Math.max(0, head - 1);
+  if (head >= tape.length)  tape.push('_');
   return {
-    tape, head, mode: rule.next,
+    tape, head,
+    mode: rule.next,
     history: [...s.history, { tape: s.tape, head: s.head, mode: s.mode }],
     log: `Read "${rule.read}" → write "${rule.write}", switch to ${rule.next}, move ${rule.dir}.`,
   };
@@ -35,92 +44,161 @@ function stepState(s) {
 function undoState(s) {
   if (!s.history.length) return s;
   const p = s.history[s.history.length - 1];
-  return { tape: [...p.tape], head: p.head, mode: p.mode, history: s.history.slice(0, -1), log: 'Stepped back.' };
+  return {
+    tape: [...p.tape], head: p.head, mode: p.mode,
+    history: s.history.slice(0, -1),
+    log: 'Stepped back.',
+  };
 }
 
 export default function TuringMachine() {
-  const [s, set] = useState(init);
+  const [s, set]     = useState(init);
   const [running, setR] = useState(false);
-  const ref = useRef(null);
+  // cellWidth shrinks on mobile; height stays fixed at CELL_HEIGHT
+  const [cellWidth, setCellWidth] = useState(52);
+  const intervalRef  = useRef(null);
+  const containerRef = useRef(null);
   const done = s.mode === 'Accept' || s.mode === 'Reject';
 
-  const reset = () => { clearInterval(ref.current); setR(false); set(init()); };
-  const doStep = () => set(stepState);
-  const doBack = () => set(undoState);
+  /* ── Responsive: only width shrinks, height stays fixed ── */
+  const updateCellWidth = useCallback(() => {
+    if (!containerRef.current) return;
+    const w         = containerRef.current.offsetWidth;
+    const padding   = 48;
+    const gaps      = (VISIBLE - 1) * GAP;
+    const available = w - padding - gaps - ELLIPSIS * 2;
+    // min 28px: just enough for one char + breathing room; max 52px: original square
+    const size      = Math.max(28, Math.min(52, Math.floor(available / VISIBLE)));
+    setCellWidth(size);
+  }, []);
+
+  useEffect(() => {
+    updateCellWidth();
+    const ro = new ResizeObserver(updateCellWidth);
+    if (containerRef.current) ro.observe(containerRef.current);
+    return () => ro.disconnect();
+  }, [updateCellWidth]);
+
+  /* ── Controls ── */
+  const reset = () => {
+    clearInterval(intervalRef.current);
+    setR(false);
+    set(init());
+  };
+
+  const doStep    = () => set(stepState);
+  const doBack    = () => set(undoState);
   const toggleRun = () => {
-    if (running) { clearInterval(ref.current); setR(false); return; }
+    if (running) {
+      clearInterval(intervalRef.current);
+      setR(false);
+      return;
+    }
     setR(true);
-    ref.current = setInterval(() => {
+    intervalRef.current = setInterval(() => {
       set(prev => {
         if (prev.mode === 'Accept' || prev.mode === 'Reject') {
-          clearInterval(ref.current); setR(false); return prev;
+          clearInterval(intervalRef.current);
+          setR(false);
+          return prev;
         }
         return stepState(prev);
       });
     }, 650);
   };
 
+  /* ── Tape window ── */
   const start = Math.max(0, s.head - 3);
   const cells = Array.from({ length: VISIBLE }, (_, i) => {
     const idx = start + i;
     return { idx, sym: s.tape[idx] ?? '_', active: idx === s.head, first: i === 0, last: i === VISIBLE - 1 };
   });
 
-  /* ── design tokens ── */
-  const mono = 'var(--ifm-font-family-monospace)';
+  /* ── Design tokens (Azeon CSS vars) ── */
+  const mono   = 'var(--ifm-font-family-monospace)';
   const accent = 'var(--az-accent)';
-  const acDim = 'var(--az-accent-dim)';
-  const primary = 'var(--az-primary)';
+  const acDim  = 'var(--az-accent-dim)';
+  const primary= 'var(--az-primary)';
   const bgBase = 'var(--az-bg-base)';
   const bgSurf = 'var(--az-bg-surface)';
-  const tPri = 'var(--az-text-primary)';
+  const tPri   = 'var(--az-text-primary)';
   const tMuted = 'var(--az-text-muted)';
-  const bdr = 'var(--az-border)';
-  const bdrS = 'var(--az-border-subtle)';
+  const bdr    = 'var(--az-border)';
+  const bdrS   = 'var(--az-border-subtle)';
 
-  const modeBg = s.mode === 'Accept' ? 'rgba(76,175,80,0.12)' : s.mode === 'Reject' ? 'rgba(200,80,80,0.12)' : bgBase;
-  const modeBdr = s.mode === 'Accept' ? 'rgba(76,175,80,0.4)' : s.mode === 'Reject' ? 'rgba(200,80,80,0.4)' : bdr;
-  const modeClr = s.mode === 'Accept' ? '#2e7d32' : s.mode === 'Reject' ? '#c85555' : tPri;
+  const modeBg  = s.mode === 'Accept' ? 'rgba(76,175,80,0.12)'  : s.mode === 'Reject' ? 'rgba(200,80,80,0.12)'  : bgBase;
+  const modeBdr = s.mode === 'Accept' ? 'rgba(76,175,80,0.4)'   : s.mode === 'Reject' ? 'rgba(200,80,80,0.4)'   : bdr;
+  const modeClr = s.mode === 'Accept' ? '#2e7d32'                : s.mode === 'Reject' ? '#c85555'                : tPri;
+
+  /* ── Derived — width scales, height is always CELL_HEIGHT ── */
+  const fontSize   = 18; // fixed: single char, always legible
+  const headFontSz = 9;  // fixed: "HEAD" label
+  const pinHeight  = 46; // fixed: pin area above cell
 
   return (
-    <div style={{ fontFamily: mono, background: bgSurf, border: `1px solid ${bdr}`, borderRadius: 16, padding: '1.5rem', margin: '2rem 0' }}>
+    <div
+      ref={containerRef}
+      style={{
+        fontFamily: mono,
+        background: bgSurf,
+        border: `1px solid ${bdr}`,
+        borderRadius: 16,
+        padding: '1.5rem',
+        margin: '2rem 0',
+        boxSizing: 'border-box',
+        width: '100%',
+        maxWidth: '100%',
+        overflow: 'hidden',
+      }}
+    >
 
       {/* ── Tape + head ── */}
-      <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'center', gap: 6, marginBottom: '1.5rem' }}>
+      <div style={{
+        display: 'flex',
+        alignItems: 'flex-end',
+        justifyContent: 'center',
+        gap: GAP,
+        marginBottom: '1.5rem',
+        overflow: 'hidden',
+      }}>
 
-        <span style={{ fontSize: 16, color: tMuted, paddingBottom: CELL / 2 - 10 }}>...</span>
+        <span style={{ fontSize: 14, color: tMuted, paddingBottom: CELL_HEIGHT / 2 - 8, flexShrink: 0 }}>…</span>
 
         {cells.map(({ idx, sym, active, first, last }) => (
-          <div key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: CELL }}>
+          <div key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: cellWidth, flexShrink: 0 }}>
 
-            {/* head pin — occupies space always, visible only when active */}
+            {/* head pin — always reserves space, only visible when active */}
             <div style={{
               display: 'flex', flexDirection: 'column', alignItems: 'center',
-              height: 46, justifyContent: 'flex-end', marginBottom: 3,
-              opacity: active ? 1 : 0, transition: 'opacity 0.2s',
+              height: pinHeight, justifyContent: 'flex-end', marginBottom: 3,
+              opacity: active ? 1 : 0,
+              transition: 'opacity 0.2s',
             }}>
               <span style={{
                 background: primary, color: '#fff',
-                fontSize: 10, letterSpacing: '0.1em', textTransform: 'uppercase',
-                padding: '3px 10px', borderRadius: 5, fontWeight: 500,
+                fontSize: headFontSz,
+                letterSpacing: '0.08em',
+                textTransform: 'uppercase',
+                padding: '2px 6px',
+                borderRadius: 4, fontWeight: 600,
                 marginBottom: 3, whiteSpace: 'nowrap',
               }}>Head</span>
-              <span style={{ fontSize: 18, color: primary, lineHeight: 1 }}>↓</span>
+              <span style={{ fontSize: 16, color: primary, lineHeight: 1 }}>↓</span>
             </div>
 
-            {/* cell — every cell has all four borders; overlap via negative left margin */}
+            {/* cell — width narrows on mobile, height stays fixed */}
             <div style={{
-              width: CELL, height: CELL,
+              width: cellWidth, height: CELL_HEIGHT,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 22, fontWeight: 500,
+              fontSize, fontWeight: 500,
               color: active ? accent : tPri,
               background: active ? acDim : bgBase,
               border: `1px solid ${active ? accent : bdrS}`,
               marginLeft: first ? 0 : -1,
               borderRadius:
                 first && last ? 8 :
-                  first ? '8px 0 0 8px' :
-                    last ? '0 8px 8px 0' : 0,
+                first          ? '8px 0 0 8px' :
+                last           ? '0 8px 8px 0' : 0,
               position: 'relative',
               zIndex: active ? 1 : 0,
               transition: 'all 0.22s',
@@ -130,7 +208,7 @@ export default function TuringMachine() {
           </div>
         ))}
 
-        <span style={{ fontSize: 16, color: tMuted, paddingBottom: CELL / 2 - 10 }}>...</span>
+        <span style={{ fontSize: 14, color: tMuted, paddingBottom: CELL_HEIGHT / 2 - 8, flexShrink: 0 }}>…</span>
       </div>
 
       {/* ── Mode badge ── */}
@@ -144,22 +222,29 @@ export default function TuringMachine() {
       </div>
 
       {/* ── Controls ── */}
-      <div style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap', marginBottom: '1rem' }}>
+      <div style={{
+        display: 'flex',
+        gap: 8,
+        justifyContent: 'center',
+        flexWrap: 'wrap',
+        marginBottom: '1rem',
+      }}>
         {[
-          { label: '↺ Reset', onClick: reset, disabled: false, isPrimary: false },
-          { label: '← Back', onClick: doBack, disabled: !s.history.length, isPrimary: false },
-          { label: 'Step →', onClick: doStep, disabled: done, isPrimary: true },
+          { label: '↺ Reset', onClick: reset,     disabled: false,            isPrimary: false },
+          { label: '← Back',  onClick: doBack,    disabled: !s.history.length, isPrimary: false },
+          { label: 'Step →',  onClick: doStep,    disabled: done,             isPrimary: true  },
           { label: running ? '⏸ Pause' : '▶ Run', onClick: toggleRun, disabled: done, isPrimary: false },
         ].map(({ label, onClick, disabled, isPrimary }) => (
           <button key={label} onClick={onClick} disabled={disabled} style={{
             fontFamily: mono, fontSize: 12, letterSpacing: '0.04em',
-            padding: '7px 18px', borderRadius: 10,
+            padding: '7px 16px', borderRadius: 10,
             cursor: disabled ? 'default' : 'pointer',
             border: `1px solid ${isPrimary ? primary : bdr}`,
             background: isPrimary ? primary : bgBase,
             color: isPrimary ? '#fff' : tPri,
             opacity: disabled ? 0.35 : 1,
             transition: 'all 0.15s',
+            flexShrink: 0,
           }}>{label}</button>
         ))}
       </div>
