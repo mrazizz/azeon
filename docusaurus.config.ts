@@ -105,10 +105,6 @@ const config: Config = {
               label: 'P vs NP',
               to: '/p-vs-np/foundations',
             },
-            {
-              label: 'Azizdevs.',
-              href: 'https://mraziz.lemonsqueezy.com',
-            },
           ],
         },
         {
@@ -123,8 +119,8 @@ const config: Config = {
               href: '/blog',
             },
             {
-              label: 'Instagram',
-              href: 'https://www.instagram.com/azeon.io',
+              label: 'X (Twitter)',
+              href: 'https://twitter.com/azeon_io',
             },
           ],
         },

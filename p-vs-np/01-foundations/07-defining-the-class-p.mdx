@@ -1,0 +1,174 @@
+---
+sidebar_position: 7
+title: Defining the Class P
+description: What does it actually mean for a problem to be "solvable fast"? This post builds the formal definition of the complexity class P from the ground up — using sorting, binary search, and the contrast between polynomial and exponential growth.
+tags: [foundations, complexity-classes, polynomial-time, big-o, class-p]
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Defining the Class $\mathcal{P}$
+
+For a long time, I assumed Sudoku and a Rubik's Cube were polynomial problems. They seemed manageable. A 9x9 grid, six faces, a finite number of moves. Surely a computer could just work through them quickly?
+
+Then I saw what happens when you scale them up. A 9x9 Sudoku is hard enough to solve by hand. A 25x25 Sudoku explodes in difficulty. A bigger Rubik's Cube explodes further. The number of possible states does not grow the way I expected. It grows exponentially. And that, as Post 6 showed, is a completely different universe from polynomial.
+
+That realization is where this post starts. This post is about the problems that *do* stay manageable as they grow. The problems where a computer, even as input gets larger and larger, can still find the answer in a reasonable number of steps. We call the collection of those problems the class $\mathcal{P}$.
+
+---
+
+## What "Polynomial" Actually Means
+
+In Post 5, we covered Big-O notation. Here is where it pays off directly.
+
+A **polynomial** is any expression built from a variable raised to fixed powers:
+
+| $n$ | $n^2$ | $n^3$ | $5n^2 + 3n + 7$ |
+|:---:|:-----:|:-----:|:---------------:|
+
+All four of those are polynomials. They look different, but they share one property: as $n$ grows, none of them spiral out of control. Double $n$, and $n^2$ becomes four times larger. Triple $n$, and $n^3$ becomes 27 times larger. That feels fast, but it is *predictable*. You can reason about it. A computer can keep up.
+
+Compare that to what Post 6 showed:
+
+$$O(2^n)$$
+
+At $n = 10$, that is 1024 steps. At $n = 64$, that is more than nine quintillion steps. At $n = 300$, you have surpassed the estimated number of atoms in the observable universe. Doubling $n$ does not double the work or quadruple it. Doubling $n$ *squares* the entire number of steps. That is the difference between polynomial and exponential.
+
+When we say an algorithm runs in **polynomial time**, we mean the number of steps it takes is bounded by some polynomial in $n$, where $n$ is the size of the input. So:
+
+- $O(n)$ fits inside a polynomial. Linear: one million inputs, one million steps.
+- $O(n^2)$ fits inside a polynomial. One million inputs, one trillion steps. Slower, but still bounded in a predictable way.
+- $O(n^5)$ still fits. It gets large, but it never crosses into the exponential regime.
+- $O(2^n)$ does not fit. It is exponential, and it grows in a way no polynomial can bound.
+
+---
+
+## The Formal Definition
+
+Now we can say it precisely.
+
+:::info The Class $\mathcal{P}$
+$\mathcal{P}$ is the set of all **decision problems** that can be solved by a **deterministic Turing machine** in **polynomial time**.
+:::
+
+Three phrases in that definition need unpacking.
+
+**Decision problem.** A decision problem is any problem whose answer is either yes or no. "Is this list sorted?" is a decision problem. "Does this number appear in this array?" is a decision problem. Complexity theory focuses on decision problems because the yes/no framing makes everything cleaner to reason about. In practice, most real problems can be converted into decision form without changing how hard they are. "Find the shortest path" becomes "Is there a path shorter than $k$?" Same difficulty, yes/no answer.
+
+**Deterministic Turing machine.** You met this in Post 3. One tape, one head, one rule for every situation. No guessing, no branching, no shortcuts. Whatever step comes next is completely determined by the current state. This is the formal stand-in for an ordinary computer.
+
+**Polynomial time.** There must exist some polynomial $p(n)$ such that the machine halts in at most $p(n)$ steps on any input of size $n$. The specific polynomial does not matter. $O(n^{100})$ qualifies. It is absurdly slow in practice, but it still counts as polynomial. We will come back to why that is actually fine in a moment.
+
+One important thing about this definition: it does not matter much which reasonable model of computation you use. Whether you use a Turing machine, a RAM machine, or a modern processor, the set of problems solvable in polynomial time stays the same. Switching models might change your running time by a polynomial factor, but polynomial times polynomial is still polynomial. This means $\mathcal{P}$ is describing something real about the *problem itself*, not an artifact of whichever machine you happened to use.
+
+---
+
+## Problems That Live in P
+
+Let's look at actual problems that are provably inside $\mathcal{P}$.
+
+<Tabs>
+  <TabItem value="sorting" label="📋 Sorting" default>
+
+    **The problem:** Given a list of $n$ numbers, arrange them in ascending order.
+
+    **Why it's in $\mathcal{P}$:** Merge Sort solves this in $O(n \log n)$. Since $n \log n$ grows slower than $n^2$, it is firmly polynomial.
+
+    Merge Sort works like this: split the list in half, sort each half, then merge the two sorted halves back together. Merging takes $O(n)$ time, and you repeat this $O(\log n)$ levels deep. Multiply them: $O(n \log n)$.
+
+    Here is what makes sorting clearly inside $\mathcal{P}$: the number of steps grows gently as the list gets longer. A list of 1000 numbers takes roughly 10000 steps. A list of one million numbers takes roughly 20 million steps. That is a 1000x increase in input leading to roughly a 2000x increase in work. Completely manageable. If you instead tried every possible arrangement of the list to find the sorted one, that would be $n!$ possibilities: a number with thousands of digits for $n = 1000$. You would never finish.
+
+  </TabItem>
+  <TabItem value="search" label="🔍 Binary Search">
+
+    **The problem:** Given a sorted list of $n$ numbers and a target value, decide whether the target appears in the list.
+
+    **Why it's in $\mathcal{P}$:** Binary Search solves this in $O(\log n)$.
+
+    Binary Search works by cutting the search space in half at every step. Look at the middle element. Is the target smaller? Ignore the right half entirely. Is it larger? Ignore the left half entirely. Each comparison eliminates half the remaining candidates.
+
+    When I first saw this properly worked out, I genuinely could not believe it. It felt too quick. A list of one million items and you need at most 20 comparisons. A list of one billion items and you need at most 30. One billion items, 30 steps. That is not a typo. The number of steps grows so slowly that adding a billion more items only costs you 10 extra comparisons. I remember thinking: how is this even legal? It is not a trick. It is what $O(\log n)$ actually means, and it is one of the most satisfying things I have come across in computer science so far.
+
+    $O(\log n)$ is even better than linear. It is very much inside $\mathcal{P}$.
+
+  </TabItem>
+  <TabItem value="path" label="🗺️ Shortest Path">
+
+    **The problem:** Given a graph of cities connected by roads with distances, find the shortest route from city A to city B.
+
+    **Why it's in $\mathcal{P}$:** Dijkstra's algorithm solves this in $O((V + E) \log V)$, where $V$ is the number of cities and $E$ is the number of roads. Both are polynomial in the input size.
+
+    This is exactly what your GPS is computing every time you ask for directions. Real maps have millions of nodes and Dijkstra handles them in seconds.
+
+    You might wonder: if shortest path is in $\mathcal{P}$, why is the Traveling Salesman Problem so hard? We will get there in Phase 2. The short version is that shortest path asks you to go from A to B. TSP asks you to visit every city exactly once and return home. That one addition changes everything.
+
+  </TabItem>
+  <TabItem value="primality" label="🔢 Primality Testing">
+
+    **The problem:** Given a number $n$, decide whether it is prime.
+
+    **Why it's in $\mathcal{P}$:** For a long time, nobody knew whether this was in $\mathcal{P}$ or not. Then in 2002, three Indian computer scientists named Agrawal, Kayal, and Saxena proved that primality testing can be done in polynomial time. Their result is called the AKS primality test.
+
+    This example matters because it shows that intuition about what is hard is unreliable. Primality testing *seemed* difficult. It sat in an uncertain zone for decades. Then someone found the proof, and it turned out to be in $\mathcal{P}$ after all. The lesson: only a mathematical proof settles the question. Gut feeling is not enough.
+
+  </TabItem>
+</Tabs>
+
+---
+
+## Why Polynomial Is the Right Threshold
+
+This deserves honesty. When I first read that $O(n^{100})$ is considered "fast" in this framework, it felt suspicious. An algorithm that takes $n^{100}$ steps for an input of size 10 needs $10^{100}$ steps. That is larger than the number of atoms in the observable universe. How is that fast?
+
+The honest answer: it is not fast in practice. Nobody runs $O(n^{100})$ algorithms on real data. But as a theoretical dividing line, polynomial is still the right choice, for three reasons.
+
+**First: in practice, polynomial algorithms have small exponents.** Every algorithm you actually encounter that belongs to $\mathcal{P}$ runs in $O(n)$, $O(n \log n)$, $O(n^2)$, or $O(n^3)$ at worst. The $O(n^{100})$ case is a theoretical edge that never appears. So the threshold lines up well with what is actually usable.
+
+**Second: polynomial builds on itself cleanly.** If you have a polynomial-time algorithm that calls another polynomial-time algorithm as a subroutine, the whole thing is still polynomial. You can build on top of $\mathcal{P}$ without stepping outside it. That makes the class mathematically well-behaved in a way exponential is not.
+
+**Third: the alternative is genuinely unworkable.** A problem requiring $O(2^n)$ time is not just slower. It is unreachable. No faster hardware rescues you. No better implementation helps. The growth is too fundamental. At $n = 300$, you need more steps than there are atoms in the universe, and no engineering trick changes that. Polynomial is where computers can actually find the answer. Exponential is where they cannot, regardless of what you do.
+
+So: polynomial is not a perfect match for "fast in practice." But it is the natural line between "computers can handle this" and "computers fundamentally cannot," and that is the distinction $\mathcal{P}$ is trying to capture.
+
+---
+
+## Two Symbols You Will See Constantly
+
+When $\mathcal{P}$ and $\mathcal{NP}$ are discussed together, two symbols appear everywhere. Here is what they mean.
+
+**The symbol $\subset$** means "is a subset of." Writing $\mathcal{P} \subset \mathcal{NP}$ means: every problem inside $\mathcal{P}$ is also inside $\mathcal{NP}$. $\mathcal{P}$ is contained within $\mathcal{NP}$, the way a smaller circle sits inside a larger one.
+
+If $\mathcal{P} = \mathcal{NP}$, the two sets contain exactly the same problems. Every problem verifiable fast would also be solvable fast.
+
+The question mark in $\mathcal{P} \stackrel{?}{=} \mathcal{NP}$ is the one nobody has been able to remove for over fifty years. Whether those two sets are equal or not is the whole problem.
+
+---
+
+## The Picture So Far
+
+$\mathcal{P}$ is defined. It is the set of decision problems solvable in polynomial time. Sorting, binary search, shortest paths, primality testing: all of them live here.
+
+What we know for certain is that $\mathcal{P}$ sits inside $\mathcal{NP}$:
+
+$$\mathcal{P} \subseteq \mathcal{NP}$$
+
+$\mathcal{NP}$ is what comes next. It is where the problems live that I used to think were polynomial, until I saw how they scale. Problems like Sudoku. Problems like the Rubik's Cube at arbitrary sizes. Problems where a given solution is easy to check, but finding that solution from scratch seems to require exponential effort.
+
+That gap between checking and solving is the subject of Post 8.
+
+:::note What We Have Established
+$\mathcal{P}$ is the set of decision problems solvable in polynomial time on a deterministic Turing machine. Sorting, binary search, shortest paths, and primality testing all live here. Polynomial time is the formal boundary between problems that computers can realistically solve and problems that they cannot.
+:::
+
+---
+
+## Up Next
+
+Post 8 defines the class $\mathcal{NP}$. We will finally see why Sudoku and the Rubik's Cube are not in $\mathcal{P}$, why verifying a solution is so much easier than finding one, and why that asymmetry is the core of the whole problem.
+
+See you there. 🚀
+
+---
+
+*Azeon is an open documentation project by Aziz. If you find an error, have a question, or want to suggest an improvement, open an issue on the GitHub repository linked in the sidebar.*
