@@ -132,11 +132,6 @@ function Hero() {
           Visit the Founder Blog
         </Link>
       </div>
-
-      <div className="az-hero__scroll">
-        <span className="az-hero__scroll-text">scroll</span>
-        <div className="az-hero__scroll-line" />
-      </div>
     </section>
   );
 }

@@ -604,30 +604,6 @@ pre {
   animation: az-fade-in-up 0.7s 0.4s ease forwards;
 }
 
-.az-hero__scroll {
-  position: absolute;
-  bottom: 2.5rem; left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
-  animation: az-scroll-hint 2.2s ease-in-out infinite;
-}
-
-.az-hero__scroll-text {
-  font-family: var(--ifm-font-family-monospace);
-  font-size: 0.56rem;
-  letter-spacing: 0.18em;
-  color: var(--az-text-muted);
-  text-transform: uppercase;
-}
-
-.az-hero__scroll-line {
-  width: 1px; height: 34px;
-  background: linear-gradient(to bottom, var(--az-text-muted), transparent);
-}
-
 /* ============================================================
    8. BUTTONS
    ============================================================ */
