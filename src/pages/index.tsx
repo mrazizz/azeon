@@ -274,7 +274,7 @@ function FeaturedProject() {
             to="/p-vs-np/foundations/introduction-to-the-millennium-prize"
             className="az-btn az-btn--accent"
           >
-            Start with Post #1 →
+            Start with Post #1
           </Link>
           <Link to="/p-vs-np/foundations" className="az-btn az-btn--ghost">
             Browse Phase 1
@@ -353,7 +353,7 @@ function ComingSoon() {
             <div className="az-coming-card__desc">
               Short-form posts on ideas, problems, and things worth thinking about.
             </div>
-            <Link to="/blog" className="az-coming-card__link">Visit the blog →</Link>
+            <Link to="/blog" className="az-coming-card__link">Visit the blog</Link>
           </div>
           <div className="az-coming-card">
             <div className="az-coming-card__icon">🔬</div>
@@ -440,7 +440,7 @@ function FinalCTA() {
           to="/p-vs-np/foundations/introduction-to-the-millennium-prize"
           className="az-btn az-btn--accent"
         >
-          Introduction to the Millennium Prize →
+          Introduction to the Millennium Prize
         </Link>
       </div>
     </section>
