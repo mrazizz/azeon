@@ -13,7 +13,7 @@ function KaTeX({ math, display = false, style }: { math: string; display?: boole
 /* ─── Data ─────────────────────────────────────────────── */
 
 const FLOATING_SYMBOLS = [
-  'P', 'NP', 'O(n²)', '∈', '≟', '∅', 'Σ*', '∀x', '∃',
+  'P', 'NP', 'O(n²)', 'Azeon', '≟', '∅', 'Σ*', '∀x', '∃',
   'SAT', '2ⁿ', 'log n', 'NP-Hard', '⊆', 'coNP', 'P≠NP',
   'PSPACE', 'BPP', 'EXP', 'Ω(n)', 'Θ', '⊕', '¬', '∧', '∨',
 ];
@@ -29,7 +29,7 @@ interface Phase {
 }
 
 const PHASES: Phase[] = [
-  { num: '01', title: 'Foundations', slug: '/p-vs-np/foundations', color: 'var(--az-phase-01)', desc: 'Algorithms, Turing machines, Big-O notation, and the formal definitions of P and NP.', publishedPosts: 8, totalPosts: 10 },
+  { num: '01', title: 'Foundations', slug: '/p-vs-np/foundations', color: 'var(--az-phase-01)', desc: 'Algorithms, Turing machines, Big-O notation, and the formal definitions of P and NP.', publishedPosts: 9, totalPosts: 10 },
   { num: '02', title: 'NP-Completeness', slug: '/p-vs-np/np-completeness', color: 'var(--az-phase-02)', desc: 'Reductions, Cook-Levin theorem, SAT, TSP, Graph Coloring, Sudoku, and the NP-Complete zoo.', publishedPosts: 0, totalPosts: 14 },
   { num: '03', title: 'Complexity Zoo', slug: '/p-vs-np/complexity-zoo', color: 'var(--az-phase-03)', desc: "coNP, PSPACE, EXP, randomized algorithms, quantum computing, and Shor's algorithm.", publishedPosts: 0, totalPosts: 10 },
   { num: '04', title: 'Failed Proofs', slug: '/p-vs-np/failed-proofs', color: 'var(--az-phase-04)', desc: 'Relativization, Natural Proofs, Algebrization, GCT — every barrier that blocks a proof.', publishedPosts: 0, totalPosts: 16 },

@@ -73,7 +73,6 @@ const config: Config = {
     },
     navbar: {
       title: 'Azeon',
-      hideOnScroll: true,
       logo: {
         alt: 'Azeon Logo',
         src: 'img/logo.svg',

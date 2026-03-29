@@ -168,7 +168,7 @@ code, pre, kbd, samp {
   font-family: 'Crimson Pro', Georgia, serif;
   font-size: 1rem;
   line-height: 1.88;
-  color: var(--az-text-secondary);
+  color: var(--az-text-primary);
 }
 
 .main-wrapper { background: var(--az-bg-base); }
