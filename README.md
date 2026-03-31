@@ -13,10 +13,9 @@
 
 ### *An independent, public investigation into the P vs NP problem.*
 
-[![Posts](https://img.shields.io/badge/Posts-Daily-black?style=flat-square)](https://mrazizz.github.io/azeon/p-vs-np/foundations)
 [![Status](https://img.shields.io/badge/Status-Active-brightgreen?style=flat-square)]()
 [![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)]()
-[![Instagram](https://img.shields.io/badge/Follow-@azeon.io-E1306C?style=flat-square&logo=instagram)](https://instagram.com/azeon.io)
+[![X](https://img.shields.io/badge/Follow-@azeon__io-000000?style=flat-square&logo=x)](https://x.com/azeon_io)
 
 <br/>
 
@@ -91,7 +90,7 @@ The site will be live at `http://localhost:3000`.
 This project is updated regularly. The best ways to follow along:
 
 - ⭐ **Star this repo** — you'll get notified of new posts
-- 📸 **Instagram**: [@azeon.io](https://instagram.com/azeon.io) — research updates & behind-the-scenes
+- 𝕏 **X (Twitter)**: [@azeon_io](https://x.com/azeon_io) — research updates & behind-the-scenes
 - 🌐 **Website**: [Azeon](https://mrazizz.github.io/azeon) — full documentation
 
 ---
