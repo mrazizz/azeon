@@ -1,0 +1,200 @@
+---
+sidebar_position: 1
+title: "Reductions"
+description: If you can solve one problem, can you solve another? Reductions are the tool that lets us answer that question precisely — and they are the key to everything in Phase 2.
+tags: [np-completeness, reductions, polynomial-time, complexity, p-vs-np]
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import ReductionGraph from '@site/src/components/ReductionGraph';
+
+# Reductions — Comparing the Difficulty of Problems
+
+The first time I heard the word "reduction" in the context of complexity theory, my brain immediately went somewhere wrong.
+
+I assumed it meant making a problem smaller. Simplifying it. Stripping something out. When you reduce a sauce in cooking, you boil off the excess and what remains is more concentrated, more manageable. That felt like a reasonable guess.
+
+It is the wrong guess entirely. And because I held onto that wrong meaning for longer than I should have, the next few things I read about reductions made almost no sense to me.
+
+I want to give you the right picture before we go anywhere else. Not because the correct definition is complicated, but because getting it wrong early will silently confuse everything that comes after. And what comes after, in this phase, is the most beautiful structure I have encountered in all of computer science so far.
+
+---
+
+## The Right Picture: Converting Currencies
+
+Here is the analogy that finally made this click for me.
+
+Suppose you have 100 US dollars and you want to know how much that is in Pakistani rupees. You do not independently solve a new problem from scratch. You convert. You take the original question, apply an exchange rate, and the answer you get back applies to the original question.
+
+The conversion did not make the "dollars" problem go away. It transformed it into a "rupees" problem, and the answer to the rupees problem is exactly the answer you needed for the dollars problem all along. Same underlying reality, different representation.
+
+A reduction from problem $A$ to problem $B$ works exactly like this. Given any instance of $A$, a reduction converts it into an instance of $B$ such that solving the $B$ instance gives you the answer to the original $A$ instance. You are not solving two problems. You are reframing one problem into another language, running the solver on the reframed version, and reading the answer back.
+
+The key thing the currency analogy captures: the value is preserved. A yes-instance of $A$ becomes a yes-instance of $B$. A no-instance of $A$ becomes a no-instance of $B$. The conversion is faithful. No information is lost or corrupted in the translation.
+
+---
+
+## The Formal Definition
+
+With that picture in mind, here is the precise version.
+
+:::info Polynomial-Time Reduction
+A **polynomial-time reduction** from problem $A$ to problem $B$ is a function $f$, computable in polynomial time, such that for any input $x$:
+
+$$x \in A \iff f(x) \in B$$
+
+In plain English: $x$ is a yes-instance of $A$ if and only if $f(x)$ is a yes-instance of $B$.
+
+We write $A \leq_P B$ to mean "$A$ reduces to $B$ in polynomial time."
+:::
+
+Two things in that definition need unpacking.
+
+The symbol $\iff$ means "if and only if." It is a two-way guarantee. Not just "if $x$ is yes then $f(x)$ is yes," but also the reverse: "if $f(x)$ is yes then $x$ must have been yes too." Both directions must hold. If a yes-instance of $A$ could accidentally become a no-instance of $B$, the reduction would be broken. The answers must correspond exactly, in both directions.
+
+The "polynomial time" requirement on the conversion is also not something you can ignore, and here is why in plain terms. Imagine I claimed to reduce some hard problem $A$ to an easy problem $B$. You would immediately be suspicious: how can a hard problem reduce to an easy one? The answer is that if I am allowed to take exponential time during the conversion step, I could secretly solve the entire hard problem inside the conversion, and then just hand $B$ a trivially easy question. The conversion would be doing all the real work, and the reduction would be meaningless as a comparison of difficulty. Requiring the conversion to run in polynomial time closes that loophole. The conversion is only allowed to do light bookkeeping, not heavy computation. That way, if $B$ is easy, we can genuinely conclude that $A$ is easy too.
+
+---
+
+## What the Symbol Is Saying
+
+The notation $A \leq_P B$ looks like "less than or equal to" on purpose. It means:
+
+> $A$ is no harder than $B$.
+
+Here is why. If I have a fast solver for $B$, I can solve $A$ fast too. I convert any $A$-instance to a $B$-instance in polynomial time, run the fast $B$-solver, and read the answer. Two polynomial operations composed is still polynomial.
+
+Flip that around, and you get the statement that matters most in this series. If $A$ cannot be solved in polynomial time, and $A$ reduces to $B$, then $B$ cannot be solved in polynomial time either. You cannot reduce a genuinely hard problem into an easy one — not when the conversion itself is restricted to polynomial time. The hardness flows upward from $A$ to $B$.
+
+:::caution The Direction Always Trips People Up
+When $A \leq_P B$, the problem on the right ($B$) is the harder one.
+
+It feels backwards. "A reduces to B" sounds like $A$ is getting simplified. But the operation is not simplifying $A$. It is showing that $B$ is powerful enough to answer $A$'s questions. Whoever can solve $B$ can solve $A$ for free. So $B$ is carrying the difficulty, not shedding it.
+:::
+
+---
+
+## A Concrete Reduction: Maximum and Sorting
+
+Let me show you what a reduction actually looks like, step by step, with two problems you already know from Phase 1.
+
+**The Maximum problem:** given a list of numbers, find the largest one. For example, given $[3, 7, 1, 9, 4]$, the answer is $9$.
+
+**The Sorting problem:** given a list of numbers, arrange them in order from smallest to largest. Given $[3, 7, 1, 9, 4]$, the output is $[1, 3, 4, 7, 9]$.
+
+Here is a reduction from Maximum to Sorting.
+
+Whenever someone gives me a list and asks for the maximum, I do not solve Maximum directly. Instead, I convert the question: I take the exact same list and ask Sorting to sort it. Once Sorting hands me back the sorted list, I just look at the very last element. That last element is always the largest. That is my answer to Maximum.
+
+Let me trace through the example. Someone asks: what is the maximum of $[3, 7, 1, 9, 4]$?
+
+I convert: give $[3, 7, 1, 9, 4]$ to Sorting.
+
+Sorting returns: $[1, 3, 4, 7, 9]$.
+
+I read the last element: $9$.
+
+Answer to Maximum: $9$. Correct.
+
+This is a valid reduction from Maximum to Sorting. Every question about Maximum has been converted into a question about Sorting, answered, and the answer was exactly right.
+
+Now notice what this tells us about difficulty. If you have a fast algorithm for Sorting, you automatically have a fast algorithm for Maximum: just sort the list and read the last element. So Maximum is no harder than Sorting. That is what Maximum $\leq_P$ Sorting means.
+
+The conversion itself cost almost nothing: I fed the same list in and read one element out. It is clearly polynomial, so the reduction is valid.
+
+(In practice, you can solve Maximum in $O(n)$ by just scanning the list once, while sorting requires $O(n \log n)$. So Sorting is actually strictly harder than Maximum. The reduction goes one way but not the other. That is fine. A reduction only needs to go one way to tell us something useful.)
+
+---
+
+## Reductions Compose
+
+Here is the property that makes reductions so powerful as a tool.
+
+If $A \leq_P B$ and $B \leq_P C$, then $A \leq_P C$.
+
+The proof is exactly what you would expect: take any $A$-instance, convert it to a $B$-instance in polynomial time, then convert that to a $C$-instance in polynomial time. Polynomial composed with polynomial is still polynomial.
+
+So you can build a chain:
+
+$$A \leq_P B \leq_P C \leq_P D$$
+
+And the conclusion is immediate: if $D$ is easy, everything to its left is easy. If $A$ is hard, everything to its right is hard. The hardness travels along the chain in one direction, and the easiness travels in the other.
+
+This composability is what makes the structure of $\mathcal{NP}$ so remarkable. The entire phase we are in is about building one such chain, problem by problem, tracing back to a single hard problem at the top.
+
+---
+
+## A Reduction Between Two Graph Problems
+
+The Maximum-to-Sorting reduction was almost too simple — the same list, one extra step, done. The reductions in Phase 2 look more like the one I am about to show you. So I want to walk through it slowly, starting from words I am going to define properly.
+
+**What is a graph?** A graph is just a set of dots connected by lines. The dots are called nodes. The lines are called edges. That is the whole definition. Think of six cities on a map, with roads connecting some of them. The cities are nodes. The roads are edges.
+
+**What is an Independent Set?** You want to pick a group of cities such that no road runs directly between any two cities in your group. They are all cut off from each other. No road connects any two of your chosen cities.
+
+**What is a Vertex Cover?** You want to place security cameras at some cities, such that every road has a camera at least at one of its two ends. Every road is being watched. You want to do this with as few cameras as possible.
+
+Those two problems sound completely unrelated. One is about finding cities with no roads between them. The other is about watching every road with cameras. But here is something striking: they are actually opposite sides of the same coin. They reduce to each other perfectly.
+
+Here is why.
+
+Pick any group of cities with no roads between them (an Independent Set). Now look at every city you did NOT pick. Claim: those leftover cities have a camera on at least one end of every road.
+
+Why? Take any road in the map. That road connects two cities. Could both of those cities be in your "no roads between them" group? No — because there is a road between them, which breaks the rule. So at least one of the two cities must be outside your group. That means at least one end of every road is covered by a leftover city. Every road is watched. The cities you did not pick form a Vertex Cover.
+
+The same logic works in reverse: if you have a Vertex Cover, the cities not in it form an Independent Set.
+
+So the two groups are always exact opposites. If you know one, you automatically know the other.
+
+The component below makes this visible. You have six cities (A through F) connected by roads. Click cities on the left to mark them as your Independent Set — cities with no roads between them, shown in purple. The right panel automatically shows the Vertex Cover — always the cities you did not pick. Watch how choosing your group on the left instantly forces the camera placements on the right.
+
+<ReductionGraph />
+
+Now here is the reduction itself. Suppose someone asks: does this map have an Independent Set of size $k$ — meaning, $k$ cities with no roads between any of them?
+
+Instead of solving that directly, I convert the question: does this map have a Vertex Cover of size $n - k$, where $n$ is the total number of cities?
+
+Same map. I just subtract $k$ from $n$ and ask the camera question instead of the strangers question. That is the entire conversion — one subtraction. And the answer carries over exactly, because the two groups are always opposites.
+
+Same value, different currency.
+
+Independent Set $\leq_P$ Vertex Cover. And because the same argument works backwards, Vertex Cover $\leq_P$ Independent Set. They are the same difficulty, just described from opposite directions.
+
+---
+
+## What a Reduction Is Not
+
+Two things I had wrong before I understood this properly.
+
+A reduction does not make the problem smaller. The conversion might actually produce a larger instance of $B$ than the original instance of $A$. What matters is that the conversion runs in polynomial time, not that it shrinks the input.
+
+A reduction does not prove two problems are the same problem. Maximum and Sorting are not the same problem. Independent Set and Vertex Cover are not the same problem. A reduction says something about relative difficulty, not identity. Two problems that reduce to each other in both directions share the same computational difficulty. That is all.
+
+---
+
+## The Map We Are Building
+
+I want to tell you what this phase is going to look like, now that you have the tool.
+
+Post 12 proves that a problem called SAT, Boolean Satisfiability, is the hardest problem in all of $\mathcal{NP}$. Hardest has a precise meaning now: every single problem in $\mathcal{NP}$ reduces to SAT in polynomial time. This is the Cook-Levin theorem, proved in 1971, and it is the result that launched the entire field of NP-Completeness.
+
+After that, each post works by taking SAT, or something already known to be NP-Complete, and reducing it to a new problem, proving the new problem is just as hard. Traveling Salesman. Graph Coloring. Sudoku. Minesweeper. They are all hard for the same reason: their difficulty traces back through a chain of reductions to SAT, which carries the weight of the entire class $\mathcal{NP}$ above it.
+
+The reduction chain is the thread that connects all of it. This post is where that thread begins.
+
+:::note What We Have Established
+A polynomial-time reduction from $A$ to $B$ is a polynomial-time conversion that preserves yes/no answers exactly, in both directions. If $A \leq_P B$, then $B$ is at least as hard as $A$. Any fast solver for $B$ gives a fast solver for $A$, and any hardness proof for $A$ propagates to $B$. Reductions compose, so hardness travels along the entire chain.
+:::
+
+---
+
+## Up Next
+
+Post 12 is the Cook-Levin theorem. It proves that SAT is NP-Complete: the first result in history to show that one single concrete problem sits at the top of the entire $\mathcal{NP}$ hierarchy, with every other problem in the class reducible to it. I have been building toward it since Post 1.
+
+See you there. 🚀
+
+---
+
+*Azeon is an open documentation project by Aziz. If you find an error or want to suggest an improvement, open an issue on the GitHub repository linked in the sidebar.*
