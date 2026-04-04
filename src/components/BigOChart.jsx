@@ -11,7 +11,6 @@ function fact(n) {
   return r;
 }
 
-// Low cap — keeps O(1)/O(log n)/O(n)/O(n log n) all visibly spread out
 const CAP = 60;
 
 function clamp(v) {
@@ -36,11 +35,11 @@ const CURVE_KEYS = ['O(1)', 'O(log n)', 'O(n)', 'O(n log n)', 'O(n²)', 'O(2ⁿ)
 const CURVES = [
   { key: 'O(1)',       color: '#4caf50', dash: '',    label: 'O(1) — Constant'           },
   { key: 'O(log n)',   color: '#00e5ff', dash: '',    label: 'O(log n) — Logarithmic'    },
-  { key: 'O(n)',       color: '#a67cff', dash: '',    label: 'O(n) — Linear'              },
+  { key: 'O(n)',       color: '#a67cff', dash: '',    label: 'O(n) — Linear'             },
   { key: 'O(n log n)', color: '#f5c542', dash: '',    label: 'O(n log n) — Linearithmic' },
-  { key: 'O(n²)',      color: '#ff8c00', dash: '',    label: 'O(n²) — Quadratic'          },
-  { key: 'O(2ⁿ)',      color: '#e0224e', dash: '6 3', label: 'O(2ⁿ) — Exponential'       },
-  { key: 'O(n!)',      color: '#ff69b4', dash: '3 3', label: 'O(n!) — Factorial'          },
+  { key: 'O(n²)',      color: '#ff8c00', dash: '',    label: 'O(n²) — Quadratic'         },
+  { key: 'O(2ⁿ)',      color: '#e0224e', dash: '6 3', label: 'O(2ⁿ) — Exponential'      },
+  { key: 'O(n!)',      color: '#ff69b4', dash: '3 3', label: 'O(n!) — Factorial'         },
 ];
 
 function buildData() {
@@ -70,14 +69,17 @@ function Inner() {
     Tooltip, ReferenceLine, ResponsiveContainer,
   } = require('recharts');
 
-  const gridColor  = dark ? 'rgba(230,225,211,0.06)' : 'rgba(26,22,37,0.07)';
-  const axisColor  = dark ? 'rgba(230,225,211,0.4)'  : 'rgba(26,22,37,0.5)';
-  const bgColor    = dark ? '#0d1117'                : '#ffffff';
+  // Dark mode: pure black base (#000000), surface #0f0f0f, elevated #16181c
+  // Light mode: pure white base (#ffffff), elevated #f7f7fa
+  // Text: dark = #e7e9ea, light = #0d0a1a
+  const bgColor    = dark ? '#0f0f0f'                : '#ffffff';
   const borderCol  = dark ? 'rgba(166,124,255,0.18)' : 'rgba(94,53,177,0.14)';
-  const tooltipBg  = dark ? '#161b22'                : '#f4f5f7';
-  const tooltipBdr = dark ? 'rgba(166,124,255,0.3)'  : 'rgba(94,53,177,0.2)';
-  const labelColor = dark ? '#e6e1d3'                : '#1a1625';
-  const accentCol  = dark ? 'rgba(166,124,255,0.5)'  : 'rgba(94,53,177,0.5)';
+  const tooltipBg  = dark ? '#16181c'                : '#f7f7fa';
+  const tooltipBdr = dark ? 'rgba(166,124,255,0.28)' : 'rgba(94,53,177,0.20)';
+  const labelColor = dark ? '#e7e9ea'                : '#0d0a1a';
+  const gridColor  = dark ? 'rgba(231,233,234,0.05)' : 'rgba(13,10,26,0.07)';
+  const axisColor  = dark ? 'rgba(231,233,234,0.38)' : 'rgba(13,10,26,0.50)';
+  const accentCol  = dark ? 'rgba(166,124,255,0.48)' : 'rgba(94,53,177,0.50)';
 
   const CustomTooltip = ({ active, payload, label }) => {
     if (!active || !payload?.length) return null;

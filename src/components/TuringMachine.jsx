@@ -10,7 +10,7 @@ const INIT_TAPE = ['1', '1', '0', '1', '_', '_', '_'];
 const VISIBLE      = 7;
 const GAP          = 6;
 const CELL_HEIGHT  = 52;
-const ELLIPSIS     = 20; // approximate width each "…" takes
+const ELLIPSIS     = 20;
 
 function init() {
   return {
@@ -52,22 +52,20 @@ function undoState(s) {
 }
 
 export default function TuringMachine() {
-  const [s, set]     = useState(init);
+  const [s, set]        = useState(init);
   const [running, setR] = useState(false);
-  // cellWidth shrinks on mobile; height stays fixed at CELL_HEIGHT
   const [cellWidth, setCellWidth] = useState(52);
   const intervalRef  = useRef(null);
   const containerRef = useRef(null);
   const done = s.mode === 'Accept' || s.mode === 'Reject';
 
-  /* ── Responsive: only width shrinks, height stays fixed ── */
+  /* ── Responsive ── */
   const updateCellWidth = useCallback(() => {
     if (!containerRef.current) return;
     const w         = containerRef.current.offsetWidth;
     const padding   = 48;
     const gaps      = (VISIBLE - 1) * GAP;
     const available = w - padding - gaps - ELLIPSIS * 2;
-    // min 28px: just enough for one char + breathing room; max 52px: original square
     const size      = Math.max(28, Math.min(52, Math.floor(available / VISIBLE)));
     setCellWidth(size);
   }, []);
@@ -114,26 +112,33 @@ export default function TuringMachine() {
     return { idx, sym: s.tape[idx] ?? '_', active: idx === s.head, first: i === 0, last: i === VISIBLE - 1 };
   });
 
-  /* ── Design tokens (Azeon CSS vars) ── */
+  /* ── Design tokens — CSS custom properties from updated theme ── */
   const mono   = 'var(--ifm-font-family-monospace)';
-  const accent = 'var(--az-accent)';
-  const acDim  = 'var(--az-accent-dim)';
-  const primary= 'var(--az-primary)';
-  const bgBase = 'var(--az-bg-base)';
-  const bgSurf = 'var(--az-bg-surface)';
-  const tPri   = 'var(--az-text-primary)';
-  const tMuted = 'var(--az-text-muted)';
-  const bdr    = 'var(--az-border)';
-  const bdrS   = 'var(--az-border-subtle)';
+  const accent = 'var(--az-accent)';       // #a67cff dark / #5e35b1 light
+  const acDim  = 'var(--az-accent-dim)';   // rgba(166,124,255,0.20) dark / rgba(94,53,177,0.12) light
+  const primary= 'var(--az-primary)';      // same as accent
+  const bgBase = 'var(--az-bg-base)';      // #000000 dark / #ffffff light
+  const bgSurf = 'var(--az-bg-surface)';   // #0f0f0f dark / #ffffff light
+  const bgElev = 'var(--az-bg-elevated)';  // #16181c dark / #f7f7fa light
+  const tPri   = 'var(--az-text-primary)'; // #e7e9ea dark / #0d0a1a light
+  const tMuted = 'var(--az-text-muted)';   // rgba(231,233,234,0.52) dark / rgba(13,10,26,0.48) light
+  const bdr    = 'var(--az-border)';       // #2f3336 dark / rgba(94,53,177,0.18) light
+  const bdrS   = 'var(--az-border-subtle)';// #1e2124 dark / rgba(13,10,26,0.09) light
 
-  const modeBg  = s.mode === 'Accept' ? 'rgba(76,175,80,0.12)'  : s.mode === 'Reject' ? 'rgba(200,80,80,0.12)'  : bgBase;
-  const modeBdr = s.mode === 'Accept' ? 'rgba(76,175,80,0.4)'   : s.mode === 'Reject' ? 'rgba(200,80,80,0.4)'   : bdr;
-  const modeClr = s.mode === 'Accept' ? '#2e7d32'                : s.mode === 'Reject' ? '#c85555'                : tPri;
+  /* ── Mode badge colors — semantic, intentionally hardcoded ── */
+  const modeBg  = s.mode === 'Accept' ? 'rgba(76,175,80,0.12)'
+                : s.mode === 'Reject' ? 'rgba(200,80,80,0.12)'
+                : bgElev;
+  const modeBdr = s.mode === 'Accept' ? 'rgba(76,175,80,0.38)'
+                : s.mode === 'Reject' ? 'rgba(200,80,80,0.38)'
+                : bdr;
+  const modeClr = s.mode === 'Accept' ? '#2e7d32'
+                : s.mode === 'Reject' ? '#c85555'
+                : tPri;
 
-  /* ── Derived — width scales, height is always CELL_HEIGHT ── */
-  const fontSize   = 18; // fixed: single char, always legible
-  const headFontSz = 9;  // fixed: "HEAD" label
-  const pinHeight  = 46; // fixed: pin area above cell
+  const fontSize   = 18;
+  const headFontSz = 9;
+  const pinHeight  = 46;
 
   return (
     <div
@@ -167,7 +172,7 @@ export default function TuringMachine() {
         {cells.map(({ idx, sym, active, first, last }) => (
           <div key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: cellWidth, flexShrink: 0 }}>
 
-            {/* head pin — always reserves space, only visible when active */}
+            {/* head pin */}
             <div style={{
               display: 'flex', flexDirection: 'column', alignItems: 'center',
               height: pinHeight, justifyContent: 'flex-end', marginBottom: 3,
@@ -186,7 +191,7 @@ export default function TuringMachine() {
               <span style={{ fontSize: 16, color: primary, lineHeight: 1 }}>↓</span>
             </div>
 
-            {/* cell — width narrows on mobile, height stays fixed */}
+            {/* cell */}
             <div style={{
               width: cellWidth, height: CELL_HEIGHT,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -230,9 +235,9 @@ export default function TuringMachine() {
         marginBottom: '1rem',
       }}>
         {[
-          { label: '↺ Reset', onClick: reset,     disabled: false,            isPrimary: false },
-          { label: '← Back',  onClick: doBack,    disabled: !s.history.length, isPrimary: false },
-          { label: 'Step →',  onClick: doStep,    disabled: done,             isPrimary: true  },
+          { label: '↺ Reset', onClick: reset,      disabled: false,             isPrimary: false },
+          { label: '← Back',  onClick: doBack,     disabled: !s.history.length, isPrimary: false },
+          { label: 'Step →',  onClick: doStep,     disabled: done,              isPrimary: true  },
           { label: running ? '⏸ Pause' : '▶ Run', onClick: toggleRun, disabled: done, isPrimary: false },
         ].map(({ label, onClick, disabled, isPrimary }) => (
           <button key={label} onClick={onClick} disabled={disabled} style={{
