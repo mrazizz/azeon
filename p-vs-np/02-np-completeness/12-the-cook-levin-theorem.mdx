@@ -1,0 +1,199 @@
+---
+sidebar_position: 2
+title: The Cook-Levin Theorem
+description: In 1971, Stephen Cook proved that one specific problem sits at the top of the entire NP hierarchy — and that solving it would solve everything else. This is the result that launched the field of NP-Completeness.
+tags: [np-completeness, cook-levin, sat, np-complete, reductions, complexity]
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import NPReductionChain from '@site/src/components/NPReductionChain';
+
+# The Cook-Levin Theorem
+
+I tried understanding SAT and the Cook-Levin theorem from YouTube. I genuinely did, I watched multiple videos. Still did not understand what SAT actually was by the end of any of them. Not gonna lie. Either they skipped steps or jumped straight into formalism without building anything first.
+
+I understand things properly when I explain them to someone else. Writing these posts makes things click for me in a way that just reading does not. So this post is me figuring out Cook-Levin by teaching it to you, and both of us will hopefully come out the other side actually getting it.
+
+---
+
+## A Quick Thing My Teacher Got Partially Right
+
+In CS class at FC College, my teacher described NP-Hard problems as the hardest problems inside $\mathcal{NP}$. That is a reasonable way to introduce it, and it is close to correct. But when I researched this on my own I found the distinction is a bit more specific than that, and it actually matters here.
+
+**NP-Complete** problems are the hardest problems that are still *inside* $\mathcal{NP}$. They can be verified in polynomial time, so they belong to $\mathcal{NP}$, and at the same time everything else in $\mathcal{NP}$ reduces to them. They are the hardest of what is inside the class.
+
+**NP-Hard** problems are at least as hard as everything in $\mathcal{NP}$, but they do not have to be in $\mathcal{NP}$ at all. Some NP-Hard problems sit completely outside $\mathcal{NP}$, which means they cannot even be verified in polynomial time. No short certificate exists for them.
+
+So my teacher was describing NP-Complete more precisely than NP-Hard. NP-Complete is NP-Hard with the extra requirement that the problem also lives inside $\mathcal{NP}$. The Cook-Levin theorem is about NP-Complete, not NP-Hard alone.
+
+---
+
+## What NP-Complete Actually Means
+
+A problem is NP-Complete if two things are true at the same time.
+
+**It must be in $\mathcal{NP}$.** That means it can be verified in polynomial time. Given a proposed solution, a computer can check whether it is correct quickly. A short certificate exists.
+
+**Every problem in $\mathcal{NP}$ must reduce to it.** That means every single problem inside $\mathcal{NP}$ can be converted into an instance of this one problem using a polynomial-time reduction (Post 11). Whoever can solve this problem can solve everything in $\mathcal{NP}$.
+
+:::info The Formal Definition
+A problem $L$ is **NP-Complete** if:
+1. $L \in \mathcal{NP}$, and
+2. For every $X \in \mathcal{NP}$: $X \leq_P L$
+
+The symbol $\in$ means "is a member of" or "belongs to." So $L \in \mathcal{NP}$ just means L is a problem inside NP. Every time you see $\in$ going forward, read it as "belongs to" or "is inside." It is one of the most common symbols in all of mathematics.
+
+Condition 2 on its own is called **NP-Hardness**. A problem satisfying only that condition, without necessarily being in $\mathcal{NP}$, is NP-Hard. NP-Complete is the overlap: problems that are NP-Hard and also inside $\mathcal{NP}$.
+:::
+
+The consequence of both conditions together: if any one NP-Complete problem turns out to have a polynomial-time solution, then every problem in $\mathcal{NP}$ has a polynomial-time solution, because everything reduces to it. Cracking one NP-Complete problem cracks all of them. That is exactly the same as proving $\mathcal{P} = \mathcal{NP}$.
+
+---
+
+## What SAT Is
+
+Post 13 will go deep on SAT on its own terms. But I need enough of a picture here to state the theorem, so let me introduce it now. I have tried to explain this as simply as I can.
+
+SAT stands for Boolean Satisfiability. It asks a yes/no question about a logical formula.
+
+The formula is built from **Boolean variables**. Each variable can only be true or false, nothing in between. Boolean is named after George Boole, a mathematician from the 1800s who built the algebra of true/false logic. You combine variables using three operations:
+
+- **AND** (written $\wedge$): true only when both sides are true. "It is raining AND cold" is only true when both things are happening at the same time.
+- **OR** (written $\vee$): true when at least one side is true. "It is raining OR cold" is true as long as at least one of them is happening.
+- **NOT** (written $\neg$): flips whatever follows it. NOT true becomes false. NOT false becomes true.
+
+A SAT formula groups variables into **clauses**. A clause is a bunch of variables (some possibly negated with NOT) all connected by OR. Then the whole formula is every clause connected by AND. Here is what that looks like.
+
+I am using the Greek letter $\phi$ (pronounced "fee") as just a name for the formula, the same way $x$ is a name for an unknown number in algebra:
+
+$$\phi = (x_1 \vee \neg x_2) \wedge (\neg x_1 \vee x_3) \wedge (x_2 \vee \neg x_3)$$
+
+Breaking this down: $x_1$, $x_2$, $x_3$ are the three variables, each true or false. The parentheses are the three clauses. Inside each clause, everything is connected by OR ($\vee$). The $\wedge$ between clauses means AND: every clause must be true at the same time.
+
+The question SAT asks is whether there is any assignment of true/false to the variables that makes the whole formula true.
+
+Let me try $x_1 = \text{true}$, $x_2 = \text{true}$, $x_3 = \text{true}$ and check each clause:
+
+- $(x_1 \vee \neg x_2)$: (true OR NOT true) = (true OR false) = true
+- $(\neg x_1 \vee x_3)$: (NOT true OR true) = (false OR true) = true
+- $(x_2 \vee \neg x_3)$: (true OR NOT true) = (true OR false) = true
+
+All three clauses are true, so the whole formula is true. This assignment works. The answer is: **yes, this formula is satisfiable.**
+
+If no assignment could ever make the formula true, the answer is: **no, it is unsatisfiable.**
+
+With $n$ variables, there are $2^n$ possible true/false assignments to try. For a formula with 300 variables, that is $2^{300}$ combinations. Post 6 showed what that number looks like. It is larger than the number of atoms in the observable universe. You cannot check them all by brute force.
+
+---
+
+## The Theorem
+
+:::info The Cook-Levin Theorem (1971)
+**SAT is NP-Complete.**
+
+SAT is in $\mathcal{NP}$, and every problem in $\mathcal{NP}$ reduces to SAT in polynomial time.
+:::
+
+The proof has two parts. The first is short. The second is the whole point.
+
+---
+
+## Part 1: SAT Is in NP
+
+If someone hands me a formula $\phi$ and an assignment of true/false values and claims it makes the formula true, can I check that quickly?
+
+Yes. I substitute the given values into every clause and check whether each one evaluates to true. For a formula with $n$ variables and $m$ clauses, this takes polynomial time. The certificate for SAT is just the satisfying assignment itself. Hand it over, check it, done.
+
+SAT is in $\mathcal{NP}$.
+
+:::note Why This Direction Is Easy
+Showing a problem is in $\mathcal{NP}$ usually just means finding the certificate and confirming that checking it is fast. Almost every problem in Phase 2 has an obvious certificate. The hard direction is always the other one: showing that everything in $\mathcal{NP}$ reduces to your problem.
+:::
+
+---
+
+## Part 2: Everything in NP Reduces to SAT
+
+This is what Cook actually had to prove, and this is where the real insight is.
+
+Every problem in $\mathcal{NP}$ has a verifier: a polynomial-time algorithm that takes an input and a certificate and checks whether the certificate is valid. That verifier is a program. That program runs on a Turing machine, one step at a time.
+
+Here is the key idea: the step-by-step run of any Turing machine can be written down as a Boolean formula. Every step is just a set of facts: what the machine is reading, what it writes, which way the head moves, what state it is in next. All of those facts are discrete. All of them can be encoded as true/false values with logical rules connecting them.
+
+Stack those logical rules up for every single step of the verifier's run and you have one large Boolean formula. That formula is satisfiable if and only if there exists a valid run of the verifier that ends in acceptance. Which means: the formula is satisfiable if and only if the original problem has a valid certificate. Which means: the formula is satisfiable if and only if the original problem is a yes-instance.
+
+That is the reduction. Convert any $\mathcal{NP}$ problem into "can this verifier accept?" and then convert that into a SAT formula.
+
+<Tabs>
+  <TabItem value="sudoku" label="🧩 The Sudoku Version" default>
+
+Suppose the $\mathcal{NP}$ problem is Sudoku. The verifier checks whether a completed grid is valid: every row, column, and box has nine distinct digits.
+
+Cook's argument says we can write a Boolean formula whose variables encode each cell of the grid and the steps of the verifier's run, with constraints encoding the Sudoku rules.
+
+The formula is satisfiable if and only if there is an assignment of digits to cells that the verifier accepts. Which means: the formula is satisfiable if and only if the Sudoku puzzle has a valid solution.
+
+"Does this Sudoku have a solution?" converts directly into "is this SAT formula satisfiable?" Same answer, different language. The same argument applies to any $\mathcal{NP}$ problem, because any $\mathcal{NP}$ problem has a polynomial-time verifier, and any polynomial-time verifier can be encoded as a Boolean formula.
+
+  </TabItem>
+  <TabItem value="size" label="📐 Why the Formula Stays Small">
+
+A reasonable worry: won't encoding an entire Turing machine computation produce an astronomically large formula?
+
+It does not, because the verifier runs in polynomial time. If the verifier takes at most $p(n)$ steps on an input of size $n$, then there are at most $p(n)$ steps to encode. Each step adds a bounded number of variables and constraints. The total formula has size roughly $O(p(n)^2)$, which is polynomial in $n$.
+
+So the conversion from any $\mathcal{NP}$ problem to SAT produces a polynomial-size formula in polynomial time. The reduction stays valid.
+
+  </TabItem>
+</Tabs>
+
+---
+
+## Why This Changes Everything
+
+Before Cook's result, researchers suspected many problems were hard. They could not prove it for any of them. And every hard problem was isolated, with no connection to the others.
+
+Cook-Levin connected all of them. Once SAT is NP-Complete, there is a benchmark problem at the top of the class. Showing that SAT reduces to your problem immediately proves your problem is NP-Complete too. You do not need to re-prove that everything in $\mathcal{NP}$ reduces to your new problem. You just show that SAT reduces to it, and the chain of reductions does the rest.
+
+Every NP-Completeness proof in Phase 2 follows exactly this pattern. Cook-Levin is the root. Every other result grows from it.
+
+---
+
+## The Historical Piece
+
+Stephen Cook published this in 1971. What is less known is that Leonid Levin independently arrived at the same result around the same time in the Soviet Union, working in almost complete isolation from Western research because of the Cold War. Levin called his version "universal search problems."
+
+The theorem carries both names because of that. Two researchers on opposite sides of the Iron Curtain, no contact between them, the same fundamental result, the same period.
+
+Neither of them knew what they had started. The year after Cook's publication, Richard Karp published a paper showing that 21 completely different real-world problems were each NP-Complete, all connected to SAT through chains of reductions. The field went from zero known NP-Complete problems to 21 in a single paper.
+
+:::note What Cook-Levin Did Not Prove
+Cook proved SAT is NP-Complete. That is not the same as proving $\mathcal{P} \neq \mathcal{NP}$. He showed that if you solve SAT, you solve everything in $\mathcal{NP}$. But whether SAT itself can be solved in polynomial time is still completely open. The theorem made the P vs NP question precise and gave it real stakes. It did not answer it.
+:::
+
+---
+
+## The Chain This Starts
+
+We now have one confirmed NP-Complete problem. The rest of Phase 2 grows from here, one reduction at a time.
+
+<NPReductionChain />
+
+Every node in that diagram is NP-Complete. Every arrow is a polynomial-time reduction. SAT at the top is the starting point proved by Cook-Levin. Every problem below it inherits the hardness through the chain. By the time we get to Graph Coloring, Hamiltonian Cycle, and TSP, the proof structure will always be the same: show it is in $\mathcal{NP}$, show something already NP-Complete reduces to it, done.
+
+:::note What We Have Established
+SAT is NP-Complete. It is in $\mathcal{NP}$ because a satisfying assignment can be verified in polynomial time. Every problem in $\mathcal{NP}$ reduces to SAT in polynomial time because any polynomial-time verifier can be encoded as a Boolean formula. This was proven independently by Cook in 1971 and Levin around the same time. Every NP-Completeness result in Phase 2 builds on this through chains of reductions.
+:::
+
+---
+
+## Up Next
+
+Post 13 is entirely about SAT on its own terms. I used it here as a vehicle for Cook-Levin. Now we will look at it directly: how Boolean logic works, how to read and reason about formulas properly, and why the clause structure of SAT turns out to be the natural language for expressing hard combinatorial problems.
+
+See you there. 🚀
+
+---
+
+*Azeon is an open documentation project by Aziz. If you find an error or want to suggest an improvement, open an issue on the GitHub repository linked in the sidebar.*
