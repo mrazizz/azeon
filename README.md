@@ -52,7 +52,7 @@ If I'm wrong, the archive will show exactly where and why. If something interest
 
 ## Research Log
 
-New posts are published **daily**. The full archive lives on the Azeon website — every proof attempt, contradiction, and insight, in the order it happened.
+Two New posts are published **every week**. The full archive lives on the Azeon website — every proof attempt, contradiction, and insight, in the order it happened.
 
 **[Read the research →](https://mrazizz.github.io/azeon/p-vs-np/foundations)**
 
