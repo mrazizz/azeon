@@ -105,7 +105,7 @@ That said, if you spot a logical error or have a reference worth reading, open a
 
 ## About the Researcher
 
-**Muhammad Aziz** — First-year ICS student (CS, Physics, Mathematics) at Forman Christian College, Lahore, Pakistan. Founder of [Azizdevs](https://github.com/azizdevs). Started asking questions about computational complexity that didn't have easy answers. Still asking them.
+**Muhammad Aziz** — First-year ICS student (CS, Physics, Mathematics) at Forman Christian College, Lahore, Pakistan. Started asking questions about computational complexity that didn't have easy answers. Still asking them.
 
 ---
 
