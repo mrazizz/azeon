@@ -79,14 +79,13 @@ const config: Config = {
       },
       items: [
         {
-          type: 'docSidebar',
-          sidebarId: 'tutorialSidebar',
-          position: 'left',
+          to: '/p-vs-np',
           label: 'P vs NP Explained',
+          position: 'left',
         },
         { to: '/blog', label: 'Founder Blog', position: 'left' },
         {
-          href: 'https://github.com/mrazizz',
+          href: 'https://github.com/mrazizz/azeon',
           label: 'GitHub',
           position: 'right',
         },
@@ -103,7 +102,7 @@ const config: Config = {
             },
             {
               label: 'P vs NP',
-              to: '/p-vs-np/foundations',
+              to: '/p-vs-np',
             },
           ],
         },

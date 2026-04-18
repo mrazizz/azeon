@@ -126,10 +126,6 @@
      --az-phase-07: #a67cff;
    }
    
-   /* ── Homepage only: restore original dark purple on index.tsx sections ──
-      The homepage is designed with dark purple on black, which works there
-      because of the specific gradients and glow effects. We scope back to
-      the original dark tokens only on homepage containers. ── */
    [data-theme='dark'] .az-hero,
    [data-theme='dark'] .az-stats,
    [data-theme='dark'] .az-section,

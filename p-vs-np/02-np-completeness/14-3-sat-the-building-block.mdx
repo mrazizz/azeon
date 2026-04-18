@@ -1,0 +1,342 @@
+---
+sidebar_position: 4
+title: "3-SAT: The Building Block"
+description: Why restricting every clause to exactly three literals keeps SAT just as hard, and how the reduction from SAT to 3-SAT actually works step by step.
+tags: [np-completeness, 3-sat, sat, reductions, np-complete, complexity, helper-variables]
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import ThreeSATExplorer from '@site/src/components/ThreeSATExplorer';
+
+# 3-SAT: The Building Block
+
+There is a game I used to play with my younger cousins. I would think of a number between 1 and 100 and they had to guess it. After each guess, I said one of two things: "higher" or "lower." Two choices. Binary. Every answer cut the remaining candidates exactly in half.
+
+They got good at it fast. With two options, you can always make progress. The structure is clean. You know exactly what to do next.
+
+Now imagine I changed the rule. Instead of higher or lower, I gave three answers: "higher," "lower," or "close but not quite." Suddenly everything falls apart. "Close but not quite" tells you almost nothing. You cannot split the search space cleanly anymore. The structure that made the two-option version tractable is gone.
+
+That gap between two options and three options is not just a metaphor I am reaching for. It is, as far as we currently understand, a real mathematical boundary. 2-SAT, the version of satisfiability where every clause has at most two literals, is in $\mathcal{P}$, solvable in polynomial time. 3-SAT, where every clause has exactly three literals, is NP-Complete.
+
+One extra literal per clause. That is the whole difference.
+
+This post explains why. It also explains the part that genuinely confused me for a while: how adding variables to a clause does not secretly change what the formula means. And specifically, that question I kept asking when I hit Case 3 which was: how does $y_1$ know what value to take? The answer is not what I expected.
+
+---
+
+## What 3-SAT Is
+
+Post 13 introduced SAT fully. Quick recap of the vocabulary we need.
+
+A **literal** is a variable or a negated variable. So $x_1$ is a literal, and $\neg x_2$ (meaning NOT $x_2$) is also a literal.
+
+A **clause** is a group of literals connected by OR. So $(x_1 \vee \neg x_2 \vee x_3)$ is a clause. The symbol $\vee$ means OR.
+
+A **SAT formula in CNF** (Conjunctive Normal Form, which just means AND of ORs) is all the clauses connected by AND. The symbol $\wedge$ means AND. For the formula to be satisfied, every single clause must be true at the same time.
+
+**3-SAT** is SAT with one extra rule: every clause must have exactly three literals. Not two, not four, not mixed. Exactly three.
+
+Here is a valid 3-SAT formula with three variables:
+
+$$\phi = (x_1 \vee \neg x_2 \vee x_3) \wedge (\neg x_1 \vee x_2 \vee \neg x_3)$$
+
+Two clauses. Each has exactly three literals. That is 3-SAT.
+
+The question is exactly the same as regular SAT: can we assign true or false to each variable so the whole formula evaluates to true?
+
+---
+
+## 3-SAT Is NP-Complete
+
+To prove 3-SAT is NP-Complete, we need two things. Post 12 defined both of them.
+
+**First**, 3-SAT must be in $\mathcal{NP}$. This is easy. If someone hands you a satisfying assignment, you substitute the values into every clause and check whether at least one literal in each clause is true. The certificate is the assignment. Checking it runs in polynomial time. So 3-SAT is in $\mathcal{NP}$.
+
+**Second**, 3-SAT must be NP-Hard: everything in $\mathcal{NP}$ must reduce to it. We already know from Post 12 that SAT is NP-Complete, meaning everything in $\mathcal{NP}$ already reduces to SAT. So we do not need to redo that entire proof. We just need to show:
+
+$$\text{SAT} \leq_P \text{3-SAT}$$
+
+If SAT reduces to 3-SAT in polynomial time, then everything that already reduces to SAT also reduces to 3-SAT. The whole chain carries forward. That makes 3-SAT at least as hard as SAT, which makes it NP-Complete.
+
+:::note What the reduction needs to do
+We need a polynomial-time function that takes any SAT formula as input and produces a 3-SAT formula as output, where the original formula is satisfiable if and only if the new formula is satisfiable.
+
+We are not required to preserve the satisfying assignment exactly. We just need the yes/no answer to stay the same.
+:::
+
+---
+
+## The Problem We Need to Solve
+
+A general SAT formula can have clauses of any size. Some clauses might have one literal. Some might have two. Some might have ten. 3-SAT requires exactly three per clause.
+
+The conversion needs to take each clause, whatever size it is, and reshape it into one or more 3-literal clauses without changing whether the formula is satisfiable.
+
+The key tool is a **helper variable** (also called an auxiliary variable). This is a brand-new Boolean variable that does not appear anywhere in the original formula. It exists only to help with reshaping. Because it is completely fresh, we can assign it whatever value we want without interfering with the original formula's variables.
+
+There are three cases depending on clause size.
+
+---
+
+## The Three Cases
+
+<span id="case-three" />
+
+**Case 1: The clause already has three literals**
+
+Nothing to do. $(x_1 \vee \neg x_2 \vee x_3)$ is already valid 3-SAT. It goes straight through unchanged.
+
+<br />
+
+<span id="case-fewer" />
+
+**Case 2: The clause has fewer than three literals**
+
+I got confused here the first time I saw this. My concern was: if we add extra stuff to a clause, does that not change what the clause is saying? What if those extra pieces accidentally make the clause true when it should not be?
+
+The answer is that we do not add free helper variables here. We duplicate existing literals.
+
+For a clause with one literal like $(x_1)$, we repeat $x_1$ to pad up to three:
+
+$$(x_1) \quad \longrightarrow \quad (x_1 \vee x_1 \vee x_1)$$
+
+Let me check: when is $(x_1 \vee x_1 \vee x_1)$ true? When $x_1$ is true. When is it false? When $x_1$ is false. Identical to the original clause $(x_1)$. Nothing changed. The clause means exactly the same thing.
+
+For a clause with two literals like $(x_1 \vee x_2)$, we duplicate one literal:
+
+$$(x_1 \vee x_2) \quad \longrightarrow \quad (x_1 \vee x_2 \vee x_2)$$
+
+When is $(x_1 \vee x_2 \vee x_2)$ true? When $x_1$ or $x_2$ is true. Identical to $(x_1 \vee x_2)$. Same clause, just padded.
+
+:::tip Why duplication works
+Repeating a literal does not add any new condition. $(a \vee a)$ is exactly the same as $(a)$. The OR of something with itself is just that same thing. So $(x_1 \vee x_1 \vee x_1)$ is true if and only if $x_1$ is true, exactly like the original.
+:::
+
+Let me verify with actual values. Suppose our whole formula is $(x_1) \wedge (\neg x_1)$. This is unsatisfiable because clause 1 forces $x_1 = \text{true}$ and clause 2 forces $x_1 = \text{false}$.
+
+After conversion:
+- Clause 1: $(x_1 \vee x_1 \vee x_1)$
+- Clause 2: $(\neg x_1 \vee \neg x_1 \vee \neg x_1)$
+
+Try $x_1 = \text{true}$: Clause 1 is true. Clause 2 is $(\text{false} \vee \text{false} \vee \text{false}) = \text{false}$. Fails.
+
+Try $x_1 = \text{false}$: Clause 1 is $(\text{false} \vee \text{false} \vee \text{false}) = \text{false}$. Fails.
+
+Still unsatisfiable. The conversion preserved the answer correctly.
+
+<br />
+
+<span id="case-more" />
+
+**Case 3: The clause has more than three literals**
+
+This is the part that tripped me up the most. I kept asking the same question when I first read about this: how does $y_1$ know whether it should be true or false? It felt like the variable was doing something magical.
+
+The answer is: $y_1$ does not know anything. $y_1$ does not decide itself. **We** decide. And we decide it after we already know which original literal is true. That is the whole point. The helper variable just gives us the freedom to make that choice.
+
+Let me show you exactly what I mean.
+
+Our clause: $(x_1 \vee x_2 \vee x_3 \vee x_4)$.
+
+In plain words: this clause is satisfied if at least one of $x_1, x_2, x_3, x_4$ is true.
+
+We introduce one helper variable $y_1$ and split into two clauses:
+
+$$(x_1 \vee x_2 \vee x_3 \vee x_4) \quad \longrightarrow \quad (x_1 \vee x_2 \vee y_1) \wedge (\neg y_1 \vee x_3 \vee x_4)$$
+
+Think of the split this way. We divided the four original literals into two groups: left group ($x_1, x_2$) and right group ($x_3, x_4$). Clause 1 covers the left group, with $y_1$ added. Clause 2 covers the right group, with $\neg y_1$ added.
+
+$y_1$ is our signal between the two clauses. Here is the rule for how we set it:
+
+**If the true literal is in the left group ($x_1$ or $x_2$):** set $y_1 = \text{false}$.
+That makes $\neg y_1 = \text{true}$, which automatically satisfies clause 2 no matter what. Clause 1 is satisfied by the left-group literal that is already true.
+
+**If the true literal is in the right group ($x_3$ or $x_4$):** set $y_1 = \text{true}$.
+That automatically satisfies clause 1 via $y_1$. Clause 2 is satisfied by the right-group literal that is already true.
+
+That is it. We just look at which side the true literal is on and set $y_1$ accordingly. There is no magic. We are just using $y_1$ as a flag to tell one clause "handle yourself, I will handle the other one."
+
+Let me trace through four concrete scenarios:
+
+**Scenario A: $x_1 = \text{true}$** (left group)
+
+Set $y_1 = \text{false}$.
+- Clause 1: $(\text{true} \vee x_2 \vee \text{false})$ = true, because $x_1$ is true.
+- Clause 2: $(\text{true} \vee x_3 \vee x_4)$ = true, because $\neg y_1 = \text{true}$.
+
+Both satisfied.
+
+**Scenario B: $x_2 = \text{true}$, $x_1 = \text{false}$** (left group)
+
+Set $y_1 = \text{false}$.
+- Clause 1: $(\text{false} \vee \text{true} \vee \text{false})$ = true, because $x_2$ is true.
+- Clause 2: $(\text{true} \vee x_3 \vee x_4)$ = true, because $\neg y_1 = \text{true}$.
+
+Both satisfied.
+
+**Scenario C: $x_3 = \text{true}$, $x_1 = x_2 = \text{false}$** (right group)
+
+Set $y_1 = \text{true}$.
+- Clause 1: $(\text{false} \vee \text{false} \vee \text{true})$ = true, because $y_1$ is true.
+- Clause 2: $(\text{false} \vee \text{true} \vee x_4)$ = true, because $x_3$ is true.
+
+Both satisfied.
+
+**Scenario D: $x_1 = x_2 = x_3 = x_4 = \text{false}$** (no original literal is true)
+
+The original clause fails. Now I need to show the new clauses also fail no matter what $y_1$ is.
+
+Try $y_1 = \text{true}$:
+- Clause 1: $(\text{false} \vee \text{false} \vee \text{true})$ = true. Fine.
+- Clause 2: $(\text{false} \vee \text{false} \vee \text{false})$ = **false**. Fails.
+
+Try $y_1 = \text{false}$:
+- Clause 1: $(\text{false} \vee \text{false} \vee \text{false})$ = **false**. Fails.
+- Clause 2: $(\text{true} \vee \text{false} \vee \text{false})$ = true. Fine.
+
+There is no escape. When all original literals are false, $y_1$ can save one clause but the other always dies. The unsatisfiability carries through correctly.
+
+:::tip The mental model for Case 3
+Think of $y_1$ as a task-delegator. When the true literal is on the left, we set $y_1 = \text{false}$ and say "left clause, you handle yourself. Right clause, I'll give you $\neg y_1 = \text{true}$ for free." When the true literal is on the right, we flip. Either way, someone gets a free pass and someone uses the real literal. The only time no one gets out of it is when no real literal is true.
+:::
+
+**Extending to five literals**
+
+For $(x_1 \vee x_2 \vee x_3 \vee x_4 \vee x_5)$, we use two helper variables and get three clauses:
+
+$$(x_1 \vee x_2 \vee y_1) \wedge (\neg y_1 \vee x_3 \vee y_2) \wedge (\neg y_2 \vee x_4 \vee x_5)$$
+
+The same logic applies, just extended by one more link. $y_1$ connects clauses 1 and 2. $y_2$ connects clauses 2 and 3. If the true literal is $x_1$ or $x_2$, we set $y_1 = \text{false}$ and $y_2 = \text{false}$, which gives free passes to clauses 2 and 3. If the true literal is $x_3$, we set $y_1 = \text{true}$ (satisfying clause 1) and $y_2 = \text{false}$ (giving clause 3 a free pass). And so on.
+
+**The general pattern, in plain words**
+
+When a clause has too many literals, say it has 6 of them, here is the pattern:
+
+$k$ is just a name for "however many literals are in the clause." So if the clause has 6 literals, $k = 6$. If it has 10 literals, $k = 10$.
+
+The number of new 3-literal clauses we get is $k - 2$. So a 6-literal clause becomes $6 - 2 = 4$ new clauses.
+
+The number of helper variables we need is $k - 3$. So a 6-literal clause needs $6 - 3 = 3$ helper variables: $y_1$, $y_2$, $y_3$.
+
+The structure is always the same:
+- First new clause: original literals 1 and 2, plus $y_1$
+- Second new clause: $\neg y_1$, original literal 3, plus $y_2$
+- Third new clause: $\neg y_2$, original literal 4, plus $y_3$
+- ... and so on ...
+- Last new clause: $\neg y_{last}$, and the final two original literals
+
+Each helper variable appears twice: once positive in one clause, once negated in the next. That is what creates the chain. The "task delegation" trick works at every link.
+
+---
+
+## The Converter
+
+The component below shows all the cases. Pick a clause size and watch how the conversion works. Orange-highlighted literals are helper variables, brand new and not from the original formula.
+
+<ThreeSATExplorer />
+
+---
+
+## The Reduction Runs in Polynomial Time
+
+For a SAT formula with $n$ variables and $m$ clauses, a clause with $k$ literals produces at most $k - 2$ new clauses and at most $k - 3$ new helper variables. The total output size is proportional to the total number of literals in the original formula. That is polynomial in the input size.
+
+The conversion itself is simple: scan each clause, check its size, apply the right case. Linear in the formula size.
+
+So the reduction runs in polynomial time, confirming:
+
+$$\text{SAT} \leq_P \text{3-SAT}$$
+
+Since SAT is NP-Complete and 3-SAT is in $\mathcal{NP}$, 3-SAT is NP-Complete.
+
+---
+
+## Why 2-SAT Is Easier
+
+Post 13 mentioned that 2-SAT is in $\mathcal{P}$ without explaining it. This is the right place to explain why, because the contrast shows exactly what the third literal does to the difficulty.
+
+2-SAT is SAT where every clause has at most two literals. There is a polynomial-time algorithm that solves it.
+
+The algorithm converts the formula into a directed graph (a graph where edges have arrows). Each variable $x_i$ and its negation $\neg x_i$ become nodes. Each clause gets converted into implications.
+
+The idea is that a clause $(a \vee b)$ says at least one of $a$ or $b$ is true. That is the same as saying: if $a$ is false, then $b$ must be true. And if $b$ is false, then $a$ must be true. So the clause becomes two directed edges in the graph: $\neg a \rightarrow b$ and $\neg b \rightarrow a$.
+
+Once the graph is built, we run an algorithm called Strongly Connected Components (SCC) on it. An SCC is a group of nodes where every node can reach every other node by following the directed edges. If any variable $x_i$ ends up in the same SCC as its negation $\neg x_i$, the formula is unsatisfiable. Otherwise it is satisfiable and we can read off an assignment from the structure.
+
+The SCC algorithm runs in $O(V + E)$ time. $V$ stands for vertices, which is just another word for nodes in the graph. $E$ stands for edges, meaning connections between nodes. So $O(V + E)$ just means the algorithm takes time proportional to the total number of nodes plus the total number of connections. That is linear time, the same as scanning a list once.
+
+For a formula with $n$ variables and $m$ clauses, the graph has $2n$ nodes (one for each variable and one for its negation) and $2m$ edges (two implications per clause). The whole thing runs in $O(n + m)$, which is polynomial.
+
+Now why does this not work for 3-SAT?
+
+A 3-literal clause $(a \vee b \vee c)$ says at least one of $a$, $b$, $c$ is true. If $a$ is false AND $b$ is false, then $c$ must be true. That is a two-condition implication: we need both $a$ and $b$ to be false simultaneously before we can draw any conclusion about $c$.
+
+A directed graph edge connects exactly two nodes. It can encode "if A is false, then B must be true." It cannot encode "if A is false AND B is false, then C must be true." Two-condition implications do not fit into graph edges.
+
+The clean algorithm that solves 2-SAT simply does not generalize to 3-SAT. The problem becomes a search through the full exponential space of assignments, and that is where the NP-Completeness lives.
+
+<Tabs>
+  <TabItem value="2sat" label="2-SAT — In P" default>
+
+**Formula:** $(x_1 \vee \neg x_2) \wedge (\neg x_1 \vee x_3) \wedge (\neg x_3 \vee x_2)$
+
+Each clause has exactly 2 literals. Convert each to implications:
+
+- $(x_1 \vee \neg x_2)$ gives $\neg x_1 \rightarrow \neg x_2$ and $x_2 \rightarrow x_1$
+- $(\neg x_1 \vee x_3)$ gives $x_1 \rightarrow x_3$ and $\neg x_3 \rightarrow \neg x_1$
+- $(\neg x_3 \vee x_2)$ gives $x_3 \rightarrow x_2$ and $\neg x_2 \rightarrow \neg x_3$
+
+Follow the chain: $x_1 \rightarrow x_3 \rightarrow x_2 \rightarrow x_1$. These three form a cycle in the graph, meaning they must all share the same truth value. Set $x_1 = x_2 = x_3 = \text{true}$.
+
+Check every clause: all satisfied. Solution found in polynomial time.
+
+  </TabItem>
+  <TabItem value="3sat" label="3-SAT — NP-Complete">
+
+**Formula:** $(x_1 \vee \neg x_2 \vee x_3) \wedge (\neg x_1 \vee x_2 \vee \neg x_3) \wedge (x_1 \vee x_2 \vee x_3)$
+
+Each clause has exactly 3 literals. Try the implication trick on the first clause:
+
+$(x_1 \vee \neg x_2 \vee x_3)$ means: if $x_1 = \text{false}$ AND $x_2 = \text{true}$, then $x_3$ must be true.
+
+That requires two conditions to hold simultaneously. A directed graph edge connects exactly two nodes. We cannot encode "A and B together imply C" as a single edge. The implication graph structure breaks down entirely.
+
+No polynomial algorithm is known. We are left searching through $2^n$ possible assignments.
+
+  </TabItem>
+</Tabs>
+
+---
+
+## Why 3-SAT Became the Standard
+
+SAT can have clauses of any size, which makes formulas inconsistent and harder to reason about. 3-SAT fixes every clause at exactly three literals. The uniformity makes reductions cleaner to write and verify.
+
+Almost every NP-Completeness proof in the rest of Phase 2 will start from 3-SAT, not SAT. The full chain looks like this:
+
+$$\text{Everything in } \mathcal{NP} \xrightarrow{\text{Cook-Levin}} \text{SAT} \leq_P \text{3-SAT} \leq_P \text{Clique} \leq_P \cdots$$
+
+3-SAT is the cleaned-up starting point for everything that follows.
+
+---
+
+## What We Have Built
+
+Two confirmed NP-Complete problems now: SAT from Post 12 and 3-SAT from this post. The reduction is mechanical once you see the cases. Short clauses get their literals duplicated. Long clauses get split into chains with helper variables acting as controlled switches.
+
+:::note What We Have Established
+3-SAT is NP-Complete. It is in $\mathcal{NP}$ because a satisfying assignment can be verified in polynomial time. It is NP-Hard because SAT reduces to it via a polynomial-time clause conversion. Short clauses get padded by repeating existing literals. Long clauses get split into chains using helper variables, where the switch structure forces at least one original literal to be true across all the new clauses. 2-SAT is solvable in polynomial time via an implication graph and SCC, but this technique fails at three literals per clause because two-condition implications cannot be encoded as directed graph edges.
+:::
+
+---
+
+## Up Next
+
+Post 15 is the Clique problem. A clique is a group of nodes in a graph where every pair of nodes is directly connected. The question "does this graph contain a clique of size $k$?" is NP-Complete, and the proof reduces directly from 3-SAT. Think of a social network where you want to find a group of $k$ people who all personally know each other.
+
+See you there. 🚀
+
+---
+
+*Azeon is an open documentation project by Aziz. If you find an error or want to suggest an improvement, open an issue on the GitHub repository linked in the sidebar.*
