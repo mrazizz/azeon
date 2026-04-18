@@ -52,7 +52,7 @@ If I'm wrong, the archive will show exactly where and why. If something interest
 
 ## Research Log
 
-New posts are published **daily**. The full archive lives on the Azeon website — every proof attempt, contradiction, and insight, in the order it happened.
+Two New posts are published **every week**. The full archive lives on the Azeon website — every proof attempt, contradiction, and insight, in the order it happened.
 
 **[Read the research →](https://mrazizz.github.io/azeon/p-vs-np/foundations)**
 
@@ -105,7 +105,7 @@ That said, if you spot a logical error or have a reference worth reading, open a
 
 ## About the Researcher
 
-**Muhammad Aziz** — First-year ICS student (CS, Physics, Mathematics) at Forman Christian College, Lahore, Pakistan. Founder of [Azizdevs](https://github.com/azizdevs). Started asking questions about computational complexity that didn't have easy answers. Still asking them.
+**Muhammad Aziz** — First-year ICS student (CS, Physics, Mathematics) at Forman Christian College, Lahore, Pakistan. Started asking questions about computational complexity that didn't have easy answers. Still asking them.
 
 ---
 
