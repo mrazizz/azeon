@@ -8,7 +8,7 @@ date: 2026-03-11
 
 I didn't go looking for P vs NP. It found me in a classroom.
 
-<!-- truncate -->
+{/* truncate */}
 
 ## It Started With a Class Discussion
 
