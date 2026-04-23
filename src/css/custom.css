@@ -339,8 +339,8 @@
      position: absolute;
      inset: 0;
      z-index: -1;
-     backdrop-filter: blur(14px) saturate(180%);
      -webkit-backdrop-filter: blur(14px) saturate(180%);
+     backdrop-filter: blur(14px) saturate(180%);
    }
    
    [data-theme='light'] .navbar::before {
@@ -355,8 +355,8 @@
    
    /* 3. Mobile Sidebar Drawer — Frosted Glass effect */
    .navbar-sidebar {
-     backdrop-filter: blur(24px) saturate(180%);
      -webkit-backdrop-filter: blur(24px) saturate(180%);
+     backdrop-filter: blur(24px) saturate(180%);
      box-shadow: 5px 0 30px rgba(0, 0, 0, 0.4) !important;
      width: var(--ifm-navbar-sidebar-width, 85vw) !important;
      max-width: 400px !important;
@@ -551,8 +551,8 @@
      margin-bottom: 2.5rem;
      opacity: 0;
      animation: az-fade-in-up 0.6s 0.05s ease forwards;
-     backdrop-filter: blur(10px);
      -webkit-backdrop-filter: blur(10px);
+     backdrop-filter: blur(10px);
    }
    
    [data-theme='light'] .az-hero__badge {
@@ -722,8 +722,8 @@
      background: rgba(255, 255, 255, 0.55);
      color: var(--az-text-primary) !important;
      border: 1.5px solid rgba(94, 53, 177, 0.28);
-     backdrop-filter: blur(10px);
      -webkit-backdrop-filter: blur(10px);
+     backdrop-filter: blur(10px);
      box-shadow: inset 0 1px 0 rgba(255,255,255,0.60), 0 2px 8px rgba(94,53,177,0.08);
    }
    
@@ -786,8 +786,8 @@
    
    [data-theme='light'] .az-stats {
      background: rgba(255, 255, 255, 0.80);
-     backdrop-filter: blur(12px) saturate(160%);
      -webkit-backdrop-filter: blur(12px) saturate(160%);
+     backdrop-filter: blur(12px) saturate(160%);
      border-top: 1px solid rgba(94, 53, 177, 0.10);
      border-bottom: 1px solid rgba(94, 53, 177, 0.10);
    }
@@ -985,8 +985,8 @@
    [data-theme='light'] .az-phase-card {
      background: rgba(255, 255, 255, 0.90);
      border: 1px solid rgba(94, 53, 177, 0.14);
-     backdrop-filter: blur(10px);
      -webkit-backdrop-filter: blur(10px);
+     backdrop-filter: blur(10px);
      box-shadow: 0 1px 6px rgba(94, 53, 177, 0.06), inset 0 1px 0 rgba(255,255,255,0.95);
    }
    
@@ -1169,8 +1169,8 @@
    [data-theme='light'] .az-stakes__card--safe {
      background: rgba(255, 255, 255, 0.80);
      border-color: rgba(76, 175, 80, 0.28);
-     backdrop-filter: blur(8px);
      -webkit-backdrop-filter: blur(8px);
+     backdrop-filter: blur(8px);
    }
    
    [data-theme='dark'] .az-stakes__card--safe {
@@ -1181,8 +1181,8 @@
    [data-theme='light'] .az-stakes__card--danger {
      background: rgba(255, 255, 255, 0.80);
      border-color: rgba(200, 80, 80, 0.28);
-     backdrop-filter: blur(8px);
      -webkit-backdrop-filter: blur(8px);
+     backdrop-filter: blur(8px);
    }
    
    [data-theme='dark'] .az-stakes__card--danger {
@@ -1251,8 +1251,8 @@
    [data-theme='light'] .az-coming-card {
      background: rgba(255, 255, 255, 0.80);
      border: 1px dashed rgba(94, 53, 177, 0.22);
-     backdrop-filter: blur(8px);
      -webkit-backdrop-filter: blur(8px);
+     backdrop-filter: blur(8px);
    }
    
    [data-theme='light'] .az-coming-card:hover {
@@ -1337,8 +1337,8 @@
    [data-theme='light'] .az-id-card {
      background: rgba(255, 255, 255, 0.90);
      border: 1px solid rgba(94, 53, 177, 0.18);
-     backdrop-filter: blur(12px);
      -webkit-backdrop-filter: blur(12px);
+     backdrop-filter: blur(12px);
      box-shadow: 0 4px 28px rgba(94, 53, 177, 0.10), inset 0 1px 0 rgba(255,255,255,0.95);
    }
    
