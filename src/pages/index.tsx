@@ -53,7 +53,6 @@ const ACHIEVEMENTS = [
   { icon: '🏆', text: 'Perfect CS score in Matric' },
   { icon: '🧩', text: 'Rubik\'s Cube solver under 45 seconds' },
   { icon: '💻', text: 'Web development & graphic designing since age 14' },
-  { icon: '🏢', text: 'Founder of Azizdevs' },
   { icon: '📖', text: 'Founder of Azeon' },
 ];
 
@@ -117,7 +116,7 @@ function Hero() {
       </p>
 
       <p className="az-hero__tagline">
-        Deep-dive documentation and essays on the problems that matter most —
+        Deep-dive documentation and essays on the problems that matter most,
         starting with the hardest open question in computer science.
       </p>
 
@@ -165,13 +164,13 @@ function WhatIsAzeon() {
               <span className="az-h2--muted">A public record of learning.</span>
             </h2>
             <p className="az-body">
-              Azeon is where I document the hard things I'm trying to understand — not after I've
+              Azeon is where I document the hard things I'm trying to understand, not after I've
               mastered them, but while I'm in the middle of figuring them out. Every project is
               structured from the absolute basics, written so a complete beginner can follow along,
               and published openly as it gets built.
             </p>
             <p className="az-body">
-              The current project covers P vs NP — the million-dollar unsolved problem in
+              The current project covers P vs NP, the million-dollar unsolved problem in
               theoretical computer science. More documentation projects and blog posts are on the way.
             </p>
           </div>
@@ -384,7 +383,7 @@ function AboutSection() {
               className="az-id-card__avatar"
             />
             <h3 className="az-id-card__name">Aziz</h3>
-            <span className="az-id-card__role">Founder of Azeon & Azizdevs</span>
+            <span className="az-id-card__role">Founder of Azeon</span>
             <div className="az-id-card__facts">
               {ACHIEVEMENTS.map(({ icon, text }) => (
                 <div key={text} className="az-id-card__fact">
