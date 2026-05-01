@@ -164,7 +164,7 @@ function Inner() {
   const bdrSub      = dark ? '#1e2124' : 'rgba(13,10,26,0.07)';
   const bg          = dark ? '#000000' : '#fafafa';
   const bgSurf      = dark ? '#0f0f0f' : '#ffffff';
-  const bgEl        = dark ? '#16181c' : '#f7f7fa';
+  const bgEl        = dark ? '#1a1a1a' : '#f7f7fa';
   const tPri        = dark ? '#e7e9ea' : '#0d0a1a';
   const tMut        = dark ? 'rgba(231,233,234,0.45)' : 'rgba(13,10,26,0.45)';
   const mono        = 'var(--ifm-font-family-monospace)';

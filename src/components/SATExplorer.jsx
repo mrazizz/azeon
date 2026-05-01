@@ -58,7 +58,7 @@ const GATES = [
 function GateSVG({ type, a, b, color, dark }) {
   const wire   = dark ? '#2f3336' : 'rgba(13,10,26,0.18)';
   const wireLo = dark ? '#3a3f44' : 'rgba(13,10,26,0.10)';
-  const body   = dark ? '#161b22' : '#f7f7fa';
+  const body   = dark ? '#0f0f0f' : '#f7f7fa';
   const active = color;
   const text   = dark ? '#e7e9ea' : '#0d0a1a';
 
@@ -130,7 +130,7 @@ function GatePanel({ dark }) {
   const bdr    = dark ? '#2f3336' : 'rgba(94,53,177,0.14)';
   const bdrSub = dark ? '#1e2124' : 'rgba(13,10,26,0.07)';
   const bg     = dark ? '#0f0f0f' : '#ffffff';
-  const bgEl   = dark ? '#16181c' : '#f7f7fa';
+  const bgEl   = dark ? '#1a1a1a' : '#f7f7fa';
   const tPri   = dark ? '#e7e9ea' : '#0d0a1a';
   const tMut   = dark ? 'rgba(231,233,234,0.45)' : 'rgba(13,10,26,0.45)';
 
@@ -324,7 +324,7 @@ function SATPanel({ dark }) {
   const bdr    = dark ? '#2f3336' : 'rgba(94,53,177,0.14)';
   const bdrSub = dark ? '#1e2124' : 'rgba(13,10,26,0.07)';
   const bg     = dark ? '#0f0f0f' : '#ffffff';
-  const bgEl   = dark ? '#16181c' : '#f7f7fa';
+  const bgEl   = dark ? '#1a1a1a' : '#f7f7fa';
   const tPri   = dark ? '#e7e9ea' : '#0d0a1a';
   const tMut   = dark ? 'rgba(231,233,234,0.45)' : 'rgba(13,10,26,0.45)';
 

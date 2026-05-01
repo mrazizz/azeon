@@ -69,12 +69,12 @@ function Inner() {
     Tooltip, ReferenceLine, ResponsiveContainer,
   } = require('recharts');
 
-  // Dark mode: pure black base (#000000), surface #0f0f0f, elevated #16181c
+  // Dark mode: pure black base (#000000), surface #0f0f0f, elevated #1a1a1a
   // Light mode: pure white base (#ffffff), elevated #f7f7fa
   // Text: dark = #e7e9ea, light = #0d0a1a
   const bgColor    = dark ? '#0f0f0f'                : '#ffffff';
   const borderCol  = dark ? 'rgba(166,124,255,0.18)' : 'rgba(94,53,177,0.14)';
-  const tooltipBg  = dark ? '#16181c'                : '#f7f7fa';
+  const tooltipBg  = dark ? '#1a1a1a'                : '#f7f7fa';
   const tooltipBdr = dark ? 'rgba(166,124,255,0.28)' : 'rgba(94,53,177,0.20)';
   const labelColor = dark ? '#e7e9ea'                : '#0d0a1a';
   const gridColor  = dark ? 'rgba(231,233,234,0.05)' : 'rgba(13,10,26,0.07)';

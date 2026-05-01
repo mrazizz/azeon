@@ -190,7 +190,7 @@ function Inner() {
   const bdr     = dark ? '#2f3336'                : 'rgba(13,10,26,0.10)';
   const bdrSub  = dark ? 'rgba(47,51,54,0.5)'    : 'rgba(13,10,26,0.06)';
   const surface = dark ? '#0f0f0f'                : '#ffffff';
-  const raised  = dark ? '#161b22'                : '#f7f7fa';
+  const raised  = dark ? '#0f0f0f'                : '#f7f7fa';
   const tMut    = dark ? 'rgba(231,233,234,0.50)' : 'rgba(13,10,26,0.45)';
   const acDim   = dark ? 'rgba(94,53,177,0.12)'  : 'rgba(94,53,177,0.07)';
   const acBdr   = 'rgba(94,53,177,0.20)';

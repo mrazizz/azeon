@@ -103,7 +103,7 @@
      /* Black scale */
      --az-bg-base:       #000000;
      --az-bg-surface:    #0f0f0f;
-     --az-bg-elevated:   #16181c;
+     --az-bg-elevated:   #1a1a1a;
      --az-bg-glass:      rgba(0, 0, 0, 0.82);
    
      /* FIX: near-white text in dark mode */

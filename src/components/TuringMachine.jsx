@@ -119,7 +119,7 @@ export default function TuringMachine() {
   const primary= 'var(--az-primary)';      // same as accent
   const bgBase = 'var(--az-bg-base)';      // #000000 dark / #ffffff light
   const bgSurf = 'var(--az-bg-surface)';   // #0f0f0f dark / #ffffff light
-  const bgElev = 'var(--az-bg-elevated)';  // #16181c dark / #f7f7fa light
+  const bgElev = 'var(--az-bg-elevated)';  // #1a1a1a dark / #f7f7fa light
   const tPri   = 'var(--az-text-primary)'; // #e7e9ea dark / #0d0a1a light
   const tMuted = 'var(--az-text-muted)';   // rgba(231,233,234,0.52) dark / rgba(13,10,26,0.48) light
   const bdr    = 'var(--az-border)';       // #2f3336 dark / rgba(94,53,177,0.18) light
