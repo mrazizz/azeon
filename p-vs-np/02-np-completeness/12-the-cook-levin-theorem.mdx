@@ -7,7 +7,6 @@ tags: [np-completeness, cook-levin, sat, np-complete, reductions, complexity]
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
-import NPReductionChain from '@site/src/components/NPReductionChain';
 
 # The Cook-Levin Theorem
 
@@ -168,19 +167,9 @@ The theorem carries both names because of that. Two researchers on opposite side
 
 Neither of them knew what they had started. The year after Cook's publication, Richard Karp published a paper showing that 21 completely different real-world problems were each NP-Complete, all connected to SAT through chains of reductions. The field went from zero known NP-Complete problems to 21 in a single paper.
 
-:::note What Cook-Levin Did Not Prove
+:::danger What Cook-Levin Did Not Prove
 Cook proved SAT is NP-Complete. That is not the same as proving $\mathcal{P} \neq \mathcal{NP}$. He showed that if you solve SAT, you solve everything in $\mathcal{NP}$. But whether SAT itself can be solved in polynomial time is still completely open. The theorem made the P vs NP question precise and gave it real stakes. It did not answer it.
 :::
-
----
-
-## The Chain This Starts
-
-We now have one confirmed NP-Complete problem. The rest of Phase 2 grows from here, one reduction at a time.
-
-<NPReductionChain />
-
-Every node in that diagram is NP-Complete. Every arrow is a polynomial-time reduction. SAT at the top is the starting point proved by Cook-Levin. Every problem below it inherits the hardness through the chain. By the time we get to Graph Coloring, Hamiltonian Cycle, and TSP, the proof structure will always be the same: show it is in $\mathcal{NP}$, show something already NP-Complete reduces to it, done.
 
 :::note What We Have Established
 SAT is NP-Complete. It is in $\mathcal{NP}$ because a satisfying assignment can be verified in polynomial time. Every problem in $\mathcal{NP}$ reduces to SAT in polynomial time because any polynomial-time verifier can be encoded as a Boolean formula. This was proven independently by Cook in 1971 and Levin around the same time. Every NP-Completeness result in Phase 2 builds on this through chains of reductions.

@@ -454,7 +454,7 @@ function Inner() {
   const mono   = 'JetBrains Mono, monospace';
   const accent = dark ? '#a67cff' : '#5e35b1';
   const bdr    = dark ? '#2f3336' : 'rgba(94,53,177,0.14)';
-  const bg     = dark ? '#000000' : '#fafafa';
+  const bg     = dark ? '#0f0f0f' : '#ffffff';
   const tMut   = dark ? 'rgba(231,233,234,0.45)' : 'rgba(13,10,26,0.45)';
 
   const TABS = ['⊙ Logic Gates', '⊛ SAT Formula'];

@@ -17,7 +17,7 @@ const PHASES = [
     slug: '/p-vs-np/np-completeness',
     color: 'var(--az-phase-02)',
     desc: 'Reductions, Cook-Levin theorem, SAT, TSP, Graph Coloring, Sudoku, and the NP-Complete zoo.',
-    publishedPosts: 4,
+    publishedPosts: 5,
     totalPosts: 14,
   },
   {
@@ -67,9 +67,6 @@ const PHASES = [
   },
 ];
 
-const TOTAL_PUBLISHED = PHASES.reduce((s, p) => s + p.publishedPosts, 0);
-const TOTAL_PLANNED   = PHASES.reduce((s, p) => s + p.totalPosts,     0);
-
 function PhaseCard({ phase }) {
   const [hovered, setHovered] = useState(false);
   const isLive = phase.publishedPosts > 0;
@@ -114,32 +111,11 @@ function PhaseCard({ phase }) {
 export default function PhasesGrid() {
   return (
     <div style={{ margin: '0 0 2rem' }}>
-
-      <div className="az-featured__meta" style={{ justifyContent: 'flex-start', marginBottom: '2rem' }}>
-        <span className="az-featured__pill az-featured__pill--live">● Live</span>
-        <span className="az-featured__pill">{TOTAL_PUBLISHED} of {TOTAL_PLANNED} posts published</span>
-        <span className="az-featured__pill">7 phases</span>
-        <span className="az-featured__pill">$1,000,000 prize</span>
-      </div>
-
       <div className="az-phases__grid">
         {PHASES.map(phase => (
           <PhaseCard key={phase.num} phase={phase} />
         ))}
       </div>
-
-      <div className="az-featured__cta" style={{ justifyContent: 'flex-start', marginTop: '2.5rem' }}>
-        <Link
-          to="/p-vs-np/foundations/introduction-to-the-millennium-prize"
-          className="az-btn az-btn--accent"
-        >
-          Start with Post #1
-        </Link>
-        <Link to="/p-vs-np/foundations" className="az-btn az-btn--ghost">
-          Browse Phase 1
-        </Link>
-      </div>
-
     </div>
   );
 }
