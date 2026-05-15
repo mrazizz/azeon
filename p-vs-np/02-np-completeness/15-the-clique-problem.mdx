@@ -1,292 +1,224 @@
 ---
 sidebar_position: 5
 title: The Clique Problem
-description: What does it mean for every person in a group to know every other person? That simple social question turns out to be one of the hardest problems in all of NP.
-tags: [np-completeness, clique, graph-theory, reductions, 3-sat, np-complete, complexity]
+description: What does finding mutual friends in a social network have to do with Boolean logic? The reduction from 3-SAT to Clique is the bridge, and it is one of the most satisfying constructions in all of NP-Completeness.
+tags: [np-completeness, clique, reductions, 3-sat, np-complete, graph-theory, complexity]
 ---
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
+import CliqueReduction from '@site/src/components/CliqueReduction';
 
 # The Clique Problem
 
-I had never heard the word "clique" in a computer science context before I sat down to write this post. I knew it as a social word. A clique is a tight group where everyone knows everyone and nobody outside really gets let in. Schools have them. Offices have them.
+I want to be honest about this one.
 
-When I found out that "clique" in graph theory means almost exactly the same thing, I was genuinely surprised. The mathematical definition is not a metaphor or a loose analogy. It is a direct formalization of the social idea. And the computational question it raises turns out to be one of the cleanest NP-Completeness proofs in this entire phase.
+When I first tried to understand the 3-SAT to Clique reduction, I read the standard explanation twice, nodded like I understood it, and moved on. Then I tried to explain it to myself from memory and completely blanked. I had the steps memorized but did not understand the *why* behind any of them.
 
-This post builds the Clique problem from the ground up, proves it is NP-Complete through a reduction from 3-SAT, and adds one more node to the reduction chain that started in Post 12.
+The problem was that I was treating the reduction as a recipe to follow rather than an idea to understand. Once I stopped trying to follow the steps and started asking why each step exists, what problem each design choice is solving, it clicked.
 
----
-
-## A Quick Graph Recap
-
-Post 11 introduced graphs when we looked at Independent Set and Vertex Cover. A graph is just a set of nodes connected by edges. Nodes are dots. Edges are lines connecting pairs of dots.
-
-In the social network framing I am going to use throughout this post, nodes are people and an edge between two people means they know each other directly.
-
-Here is a small example with four people. I am going to write it as a connection list because that is cleaner than trying to draw it:
-
-Nodes: A, B, C, D
-Edges:
-A -- B  (A knows B)
-A -- C  (A knows C)
-B -- C  (B knows C)
-B -- D  (B knows D)
-C -- D  (C knows D)
-
-A does not know D. There is no edge between them.
+That is how I want to explain it here. Not step by step, but idea by idea.
 
 ---
 
 ## What a Clique Is
 
-A clique in a graph is a subset of nodes where every single pair in that subset is connected by an edge.
+A clique is a group of nodes in a graph where every single pair of nodes is connected by an edge.
 
-In social terms, a clique is a group where everyone personally knows everyone else. Not most of them. Every pair.
+That is the whole definition. If I pick four nodes and every possible pair among them has an edge, those four nodes form a clique of size 4.
 
-Take the example above. Is $\{A, B, C\}$ a clique? Check every pair:
+The word comes from social networks. A clique of people is a group where everyone knows everyone else. Not just everyone knows one person in the group. Everyone knows every person in the group. Every possible pair is friends.
 
-- A knows B. Edge exists.
-- A knows C. Edge exists.
-- B knows C. Edge exists.
+The question we are asking is the **Clique Decision Problem**: given a graph $G$ and a number $k$, does $G$ contain a clique of size $k$?
 
-Every pair is connected. So yes, $\{A, B, C\}$ is a clique of size 3.
+Checking a proposed clique is easy. If someone hands me a set of $k$ nodes and claims they form a clique, I just verify that every pair has an edge. That takes at most $k^2$ checks. Polynomial time. So Clique is in $\mathcal{NP}$.
 
-Let me visualize just that triangle so the shape of a clique is clear:
-A
-/ 
-B---C
-
-Every node connected to every other node. That is what a clique looks like.
-
-Now ask whether $\{A, B, C, D\}$ is a clique. Check every pair. A does not know D. No edge exists between them. So no, $\{A, B, C, D\}$ is not a clique.
-
-The number of nodes in the clique is called its size. A clique of size 3 is three people who all mutually know each other. A clique of size 10 is ten people who all mutually know each other, which means 45 separate pairwise connections all have to exist at once.
-
-:::note The Complete Subgraph
-Mathematicians sometimes call a clique a complete subgraph. That just means taking a subset of nodes where every possible edge among them actually exists. Same idea, more formal language.
-:::
+Finding a clique is hard. There is no known polynomial-time algorithm to determine whether a clique of size $k$ exists in a general graph. And we are about to prove exactly why it is NP-Hard, by showing 3-SAT reduces to it.
 
 ---
 
-## The Decision Problem
+## The Core Idea Behind the Reduction
 
-Just like every other problem in this phase, we frame Clique as a yes/no question.
+Before I show you the construction, let me explain the intuition. This is the part that was missing for me every time I tried to learn this.
 
-**Clique problem.** Given a graph $G$ and a number $k$, does $G$ contain a clique of size at least $k$?
+A satisfying assignment for a 3-SAT formula with $k$ clauses picks one literal per clause that is true. If the formula has 3 clauses, the assignment picks 3 literals, one per clause, that are all consistent with each other. Consistent here means: no two of them contradict each other. You cannot pick $x_1$ from one clause and $\neg x_1$ from another, because you cannot have $x_1$ be both true and false at the same time.
 
-Not "find the largest clique." Just "does one of this size exist?" Same underlying difficulty, but the yes/no framing is the one complexity theory works with.
+So a satisfying assignment is really just a set of $k$ consistent literals, one from each clause.
 
----
+Now here is the reframe. What if we built a graph where:
+- Each literal in the formula is a node
+- Two nodes are connected if they are from different clauses and are not contradictory
 
-## Clique Is in NP
+Then a satisfying assignment, a set of $k$ consistent literals, one from each clause, would correspond exactly to a clique of size $k$ in that graph. Every pair in the set comes from different clauses (one per clause), and every pair is non-contradictory (they are all consistent). That is exactly what an edge means in this graph. So every pair has an edge. That is a clique.
 
-First requirement for NP-Completeness is that the problem must be in $\mathcal{NP}$. That means there has to be a short certificate that can be verified fast.
+And the reverse: a clique of size $k$ picks one node per clause (it cannot pick two from the same clause because same-clause nodes have no edges between them by design) and all pairs are consistent (because edges only exist between non-contradictory nodes). That is a satisfying assignment.
 
-For Clique the certificate is just the list of $k$ nodes. If someone claims there is a clique of size $k$, they hand you that list.
+The formula is satisfiable if and only if the graph has a $k$-clique.
 
-Verification means checking every pair in the list and confirming an edge exists between them. The number of pairs in a group of $k$ nodes is $\binom{k}{2} = \frac{k(k-1)}{2}$, which grows as $O(k^2)$. Polynomial time. Fast.
-
-Clique is in $\mathcal{NP}$.
-
----
-
-## Clique Is NP-Hard: The Reduction from 3-SAT
-
-This is the part I had to sit with for a while because the construction is not what I would have guessed. It is much cleaner than I expected and also a bit strange the first time you see it.
-
-We need to show:
-
-$$\text{3-SAT} \leq_P \text{Clique}$$
-
-Given any 3-SAT formula, we convert it into a graph in polynomial time such that the formula is satisfiable if and only if the graph contains a clique of a specific size. Whoever can solve Clique can therefore solve 3-SAT. Since 3-SAT is NP-Complete, Clique must be NP-Hard.
-
-### The Construction
-
-Take any 3-SAT formula with $k$ clauses. For the formula to be satisfied, at least one literal in each clause must be true. We need $k$ simultaneously true literals, one from each clause, with no contradictions between them.
-
-That is the key. We need a consistent selection of one true literal per clause.
-
-Here is how the graph gets built.
-
-**Nodes.** For each literal in each clause, create one node. A formula with $k$ clauses and 3 literals per clause gives $3k$ nodes total. Each node carries a label (the literal it represents) and a tag (the clause it came from).
-
-**Edges.** Connect two nodes with an edge if and only if both conditions hold:
-
-1. The two nodes come from different clauses.
-2. The two literals are not contradictory, meaning one is not the negation of the other.
-
-No edges between nodes from the same clause. No edges between a literal and its negation from any clause.
-
-**The claim.** The 3-SAT formula is satisfiable if and only if this graph contains a clique of size $k$.
-
-### Why This Works
-
-**Direction 1.** If the formula is satisfiable, the graph has a clique of size $k$.
-
-Take a satisfying assignment. Pick one true literal from each clause. That gives $k$ literals, one per clause. Look at the $k$ nodes corresponding to them. Take any two of those nodes. They are from different clauses because we picked one per clause, so the first edge condition is met. Are they contradictory? No, because the satisfying assignment made both of them true simultaneously, and a literal and its negation cannot both be true at the same time. So the second condition is met too. Every pair has an edge. That is a clique of size $k$.
-
-**Direction 2.** If the graph has a clique of size $k$, the formula is satisfiable.
-
-Take a clique of size $k$. Two nodes from the same clause are never connected by construction. So the only way to have $k$ mutually connected nodes is to have exactly one from each clause. Take the $k$ literals those nodes represent. No two are contradictory because every pair in the clique is connected, and contradictory literals get no edge. So we can set all $k$ literals to true simultaneously. That satisfies at least one literal in each clause, which satisfies the whole formula.
-
-:::tip The Translation in Plain Words
-A satisfying assignment is a consistent choice of one true literal per clause. A clique of size $k$ is a consistent selection of one node per clause, where consistent means no contradictions. The construction turns literals into nodes and consistency into edges. A satisfying assignment and a clique of size $k$ are the same object written in two different languages.
-:::
+That is the whole reduction. Let me now build it concretely.
 
 ---
 
-## A Worked Example
+## The Construction
 
-I want to trace through a real formula because I find it impossible to trust a proof until I have walked through the numbers myself.
-
-Take this 3-SAT formula with 3 clauses ($k = 3$):
+We will use a specific formula so everything is concrete. Here is our 3-SAT formula with 3 clauses ($k = 3$):
 
 $$\phi = (x_1 \vee \neg x_2 \vee x_3) \wedge (\neg x_1 \vee x_2 \vee \neg x_3) \wedge (x_1 \vee x_2 \vee x_3)$$
 
-**Step 1. Create the nodes.**
+**Step 1: Create one node per literal per clause.**
 
-3 clauses, 3 literals each, so 9 nodes.
+The formula has 3 clauses and 3 literals per clause, so we create $3 \times 3 = 9$ nodes.
 
 | Node | Literal | Clause |
 |------|---------|--------|
-| 1 | $x_1$ | 1 |
-| 2 | $\neg x_2$ | 1 |
-| 3 | $x_3$ | 1 |
-| 4 | $\neg x_1$ | 2 |
-| 5 | $x_2$ | 2 |
-| 6 | $\neg x_3$ | 2 |
-| 7 | $x_1$ | 3 |
-| 8 | $x_2$ | 3 |
-| 9 | $x_3$ | 3 |
+| 1 | $x_1$ | Clause 1 |
+| 2 | $\neg x_2$ | Clause 1 |
+| 3 | $x_3$ | Clause 1 |
+| 4 | $\neg x_1$ | Clause 2 |
+| 5 | $x_2$ | Clause 2 |
+| 6 | $\neg x_3$ | Clause 2 |
+| 7 | $x_1$ | Clause 3 |
+| 8 | $x_2$ | Clause 3 |
+| 9 | $x_3$ | Clause 3 |
 
-**Step 2. Draw edges between clause 1 and clause 2.**
+**Step 2: Add edges between non-contradictory nodes from different clauses.**
 
-- Node 1 ($x_1$) and Node 4 ($\neg x_1$) are contradictory. No edge.
-- Node 1 ($x_1$) and Node 5 ($x_2$) are not contradictory. Edge.
-- Node 1 ($x_1$) and Node 6 ($\neg x_3$) are not contradictory. Edge.
-- Node 2 ($\neg x_2$) and Node 4 ($\neg x_1$) are not contradictory. Edge.
-- Node 2 ($\neg x_2$) and Node 5 ($x_2$) are contradictory. No edge.
-- Node 2 ($\neg x_2$) and Node 6 ($\neg x_3$) are not contradictory. Edge.
-- Node 3 ($x_3$) and Node 4 ($\neg x_1$) are not contradictory. Edge.
-- Node 3 ($x_3$) and Node 5 ($x_2$) are not contradictory. Edge.
-- Node 3 ($x_3$) and Node 6 ($\neg x_3$) are contradictory. No edge.
+Two nodes get an edge if and only if both conditions hold:
+1. They come from **different clauses**
+2. They are **not contradictory**; they do not have the same variable with opposite negation
 
-**Edges between clause 1 and clause 3.**
+Two nodes are contradictory if one is $x_i$ and the other is $\neg x_i$ for the same $i$. That is the only way to have a contradiction.
 
-- Node 1 ($x_1$) and Node 7 ($x_1$) are the same literal. Edge.
-- Node 1 ($x_1$) and Node 8 ($x_2$) are not contradictory. Edge.
-- Node 1 ($x_1$) and Node 9 ($x_3$) are not contradictory. Edge.
-- Node 2 ($\neg x_2$) and Node 7 ($x_1$) are not contradictory. Edge.
-- Node 2 ($\neg x_2$) and Node 8 ($x_2$) are contradictory. No edge.
-- Node 2 ($\neg x_2$) and Node 9 ($x_3$) are not contradictory. Edge.
-- Node 3 ($x_3$) and Node 7 ($x_1$) are not contradictory. Edge.
-- Node 3 ($x_3$) and Node 8 ($x_2$) are not contradictory. Edge.
-- Node 3 ($x_3$) and Node 9 ($x_3$) are the same literal. Edge.
+Let me work through every cross-clause pair systematically so nothing is mysterious.
 
-**Edges between clause 2 and clause 3.**
-
-- Node 4 ($\neg x_1$) and Node 7 ($x_1$) are contradictory. No edge.
-- Node 4 ($\neg x_1$) and Node 8 ($x_2$) are not contradictory. Edge.
-- Node 4 ($\neg x_1$) and Node 9 ($x_3$) are not contradictory. Edge.
-- Node 5 ($x_2$) and Node 7 ($x_1$) are not contradictory. Edge.
-- Node 5 ($x_2$) and Node 8 ($x_2$) are the same literal. Edge.
-- Node 5 ($x_2$) and Node 9 ($x_3$) are not contradictory. Edge.
-- Node 6 ($\neg x_3$) and Node 7 ($x_1$) are not contradictory. Edge.
-- Node 6 ($\neg x_3$) and Node 8 ($x_2$) are not contradictory. Edge.
-- Node 6 ($\neg x_3$) and Node 9 ($x_3$) are contradictory. No edge.
-
-**Step 3. Find the clique.**
-
-I want a clique of size 3, one node per clause. Let me try Nodes 1, 5, 7 which are $x_1$ from clause 1, $x_2$ from clause 2, and $x_1$ from clause 3.
-
-- Node 1 and Node 5 have an edge. Yes.
-- Node 1 and Node 7 have an edge. Yes.
-- Node 5 and Node 7 have an edge. Yes.
-
-That is a valid clique of size 3.
-
-**Step 4. Read back the satisfying assignment.**
-
-From the clique: $x_1 = \text{true}$, $x_2 = \text{true}$. Set $x_3 = \text{false}$.
-
-Check every clause:
-
-- Clause 1: $(x_1 \vee \neg x_2 \vee x_3) = (\text{true} \vee \text{false} \vee \text{false}) = \text{true}$ ✓
-- Clause 2: $(\neg x_1 \vee x_2 \vee \neg x_3) = (\text{false} \vee \text{true} \vee \text{true}) = \text{true}$ ✓
-- Clause 3: $(x_1 \vee x_2 \vee x_3) = (\text{true} \vee \text{true} \vee \text{false}) = \text{true}$ ✓
-
-All satisfied. The clique gave me the satisfying assignment directly.
-
----
-
-## The Reduction Runs in Polynomial Time
-
-For a formula with $k$ clauses and at most 3 literals per clause, we create at most $3k$ nodes. The number of potential edges is at most $\binom{3k}{2}$, which is $O(k^2)$. Checking each potential edge for the two conditions takes constant time.
-
-Total construction time is $O(k^2)$. Polynomial in the size of the formula.
-
-The reduction is valid:
-
-$$\text{3-SAT} \leq_P \text{Clique}$$
-
-Since 3-SAT is NP-Complete and Clique is in $\mathcal{NP}$, Clique is NP-Complete.
-
----
-
-## Why Clique Feels Hard
-
-Searching for a clique of size $k$ in a graph with $n$ nodes by brute force means checking all possible subsets of $k$ nodes and verifying each one. The number of such subsets is $\binom{n}{k}$.
+:::note Why no edges within a clause?
+Nodes from the same clause never get edges. The reason: a clique of size $k$ needs one node per clause, which means every pair in the clique must come from different clauses. If we allowed same-clause edges, a clique could pick two nodes from one clause and zero from another, which would not correspond to a valid satisfying assignment. Blocking same-clause edges enforces the "one per clause" rule automatically.
+:::
 
 <Tabs>
-  <TabItem value="small" label="Small k" default>
+  <TabItem value="c1c2" label="Clause 1 ↔ Clause 2" default>
 
-For $k = 3$ and $n = 50$, there are $\binom{50}{3} = 19{,}600$ subsets to check. A computer handles this instantly. The problem feels trivial at this scale.
+Checking every pair between Clause 1 (nodes 1, 2, 3) and Clause 2 (nodes 4, 5, 6):
+
+| Node A | Node B | Same variable, opposite sign? | Edge? |
+|--------|--------|-------------------------------|-------|
+| $x_1$ (node 1) | $\neg x_1$ (node 4) | Yes — both $x_1$, opposite sign | **No edge** |
+| $x_1$ (node 1) | $x_2$ (node 5) | No — different variables | **Edge** |
+| $x_1$ (node 1) | $\neg x_3$ (node 6) | No — different variables | **Edge** |
+| $\neg x_2$ (node 2) | $\neg x_1$ (node 4) | No — different variables | **Edge** |
+| $\neg x_2$ (node 2) | $x_2$ (node 5) | Yes — both $x_2$, opposite sign | **No edge** |
+| $\neg x_2$ (node 2) | $\neg x_3$ (node 6) | No — different variables | **Edge** |
+| $x_3$ (node 3) | $\neg x_1$ (node 4) | No — different variables | **Edge** |
+| $x_3$ (node 3) | $x_2$ (node 5) | No — different variables | **Edge** |
+| $x_3$ (node 3) | $\neg x_3$ (node 6) | Yes — both $x_3$, opposite sign | **No edge** |
+
+6 edges, 3 missing (the contradictory pairs).
 
   </TabItem>
-  <TabItem value="medium" label="Medium k">
+  <TabItem value="c1c3" label="Clause 1 ↔ Clause 3">
 
-For $k = 10$ and $n = 50$, there are $\binom{50}{10} = 10{,}272{,}278{,}170$ subsets. Over ten billion. The problem is already becoming uncomfortable.
+Checking every pair between Clause 1 (nodes 1, 2, 3) and Clause 3 (nodes 7, 8, 9):
+
+| Node A | Node B | Same variable, opposite sign? | Edge? |
+|--------|--------|-------------------------------|-------|
+| $x_1$ (node 1) | $x_1$ (node 7) | Same literal (no contradiction) | **Edge** |
+| $x_1$ (node 1) | $x_2$ (node 8) | No — different variables | **Edge** |
+| $x_1$ (node 1) | $x_3$ (node 9) | No — different variables | **Edge** |
+| $\neg x_2$ (node 2) | $x_1$ (node 7) | No — different variables | **Edge** |
+| $\neg x_2$ (node 2) | $x_2$ (node 8) | Yes — both $x_2$, opposite sign | **No edge** |
+| $\neg x_2$ (node 2) | $x_3$ (node 9) | No — different variables | **Edge** |
+| $x_3$ (node 3) | $x_1$ (node 7) | No — different variables | **Edge** |
+| $x_3$ (node 3) | $x_2$ (node 8) | No — different variables | **Edge** |
+| $x_3$ (node 3) | $x_3$ (node 9) | Same literal (no contradiction) | **Edge** |
+
+8 edges, 1 missing ($\neg x_2$ vs $x_2$).
 
   </TabItem>
-  <TabItem value="large" label="Large k">
+  <TabItem value="c2c3" label="Clause 2 ↔ Clause 3">
 
-For $k = 25$ and $n = 50$, there are $\binom{50}{25} \approx 1.26 \times 10^{14}$ subsets. Hundreds of trillions. Post 6 showed what this growth regime actually means in practice. No hardware solves this in time.
+Checking every pair between Clause 2 (nodes 4, 5, 6) and Clause 3 (nodes 7, 8, 9):
+
+| Node A | Node B | Same variable, opposite sign? | Edge? |
+|--------|--------|-------------------------------|-------|
+| $\neg x_1$ (node 4) | $x_1$ (node 7) | Yes — both $x_1$, opposite sign | **No edge** |
+| $\neg x_1$ (node 4) | $x_2$ (node 8) | No — different variables | **Edge** |
+| $\neg x_1$ (node 4) | $x_3$ (node 9) | No — different variables | **Edge** |
+| $x_2$ (node 5) | $x_1$ (node 7) | No — different variables | **Edge** |
+| $x_2$ (node 5) | $x_2$ (node 8) | Same literal (no contradiction) | **Edge** |
+| $x_2$ (node 5) | $x_3$ (node 9) | No — different variables | **Edge** |
+| $\neg x_3$ (node 6) | $x_1$ (node 7) | No — different variables | **Edge** |
+| $\neg x_3$ (node 6) | $x_2$ (node 8) | No — different variables | **Edge** |
+| $\neg x_3$ (node 6) | $x_3$ (node 9) | Yes — both $x_3$, opposite sign | **No edge** |
+
+7 edges, 2 missing.
 
   </TabItem>
 </Tabs>
 
-Brute force is dead. No polynomial-time algorithm for finding the maximum clique is known. And now we understand that the difficulty is not accidental. Clique carries the same fundamental hardness as everything in $\mathcal{NP}$ through the reduction chain.
+**Total: 21 edges, with contradictory pairs blocked.**
 
 ---
 
-## The Thing That Surprised Me Writing This
+## The Graph, Visualized
 
-When I started working through this reduction, I kept expecting the hard part to be somewhere complicated. Some nested encoding, some trick that would take me a long time to follow.
+Hover over any node to see exactly which other nodes it connects to and why. Then click "Show 3-Clique" to see the satisfying assignment appear as a clique.
 
-The actual construction is almost shockingly direct. Literals become nodes. Consistency becomes edges. A satisfying assignment becomes a clique. Once you see it, you immediately see why it works. There is nothing hidden.
-
-I think that directness is part of why this proof is one of the ones that stays with you.
+<CliqueReduction />
 
 ---
 
-## Clique in the Reduction Chain
+## Reading the Clique as a Satisfying Assignment
 
-Post 14 proved $\text{SAT} \leq_P \text{3-SAT}$. This post proves $\text{3-SAT} \leq_P \text{Clique}$. By transitivity:
+Once you have the graph, finding a 3-clique gives you a satisfying assignment directly.
 
-$$\text{Everything in } \mathcal{NP} \xrightarrow{\text{Cook-Levin}} \text{SAT} \leq_P \text{3-SAT} \leq_P \text{Clique}$$
+Try $x_1 = \text{true}$, $x_2 = \text{true}$, $x_3 = \text{true}$.
 
-Any polynomial-time algorithm for Clique would propagate all the way back up and give us polynomial-time algorithms for everything in $\mathcal{NP}$.
+With this assignment:
+- Clause 1: $x_1$ is true, so pick node 1 ($x_1$)
+- Clause 2: $x_2$ is true, so pick node 5 ($x_2$)
+- Clause 3: $x_1$ is true, so pick node 7 ($x_1$)
+
+Nodes {1, 5, 7}. Do all three pairs have edges?
+
+- Node 1 ($x_1$) and node 5 ($x_2$): different variables, edge exists ✓
+- Node 1 ($x_1$) and node 7 ($x_1$): same literal, edge exists ✓
+- Node 5 ($x_2$) and node 7 ($x_1$): different variables, edge exists ✓
+
+All three pairs connected. That is a 3-clique.
+
+The clique exists because the assignment is consistent: no two chosen literals contradict each other. And they cannot contradict each other, because that is exactly what the edge rule enforces. Every edge is a certificate of non-contradiction. Three mutually connected nodes are three mutually compatible choices.
+
+:::tip The two-way correspondence
+A satisfying assignment: pick one true literal per clause, and those nodes form a clique.
+
+A clique of size $k$: one node per clause (same-clause pairs have no edges, so this is forced), all pairs non-contradictory (only non-contradictory pairs have edges), assign those literals true, and you have a satisfying assignment.
+
+The correspondence goes in both directions, which is what makes this a valid reduction.
+:::
+
+---
+
+## Why the Reduction Is Polynomial
+
+For a formula with $k$ clauses and 3 literals per clause:
+- We create $3k$ nodes. That is linear in the formula size.
+- We check at most $(3k)^2 / 2$ pairs for edges. That is quadratic in $k$. Polynomial.
+
+The whole conversion runs in polynomial time. And the output asks: does this graph have a clique of size $k$? Exactly one question, one number.
+
+$$\text{3-SAT} \leq_P \text{Clique}$$
+
+Since 3-SAT is NP-Complete and Clique is in $\mathcal{NP}$ (verifying a clique takes polynomial time: check that every pair has an edge), Clique is NP-Complete.
 
 :::note What We Have Established
-Clique is NP-Complete. It is in $\mathcal{NP}$ because a proposed clique can be verified in polynomial time by checking all pairs. It is NP-Hard because 3-SAT reduces to it in polynomial time. Given a 3-SAT formula with $k$ clauses, we build a graph where each literal becomes a node and edges connect non-contradictory literals from different clauses. The formula is satisfiable if and only if this graph contains a clique of size $k$. A clique is a consistent selection of one true literal per clause, which is exactly what a satisfying assignment is.
+Clique is NP-Complete. It is in $\mathcal{NP}$ because a proposed clique can be verified in polynomial time. It is NP-Hard because 3-SAT reduces to it: given any 3-SAT formula, build a graph where literals are nodes and non-contradictory cross-clause pairs are edges. The formula is satisfiable if and only if the graph has a $k$-clique. The satisfying assignment and the clique are two descriptions of the same underlying structure: $k$ mutually consistent choices, one per clause.
 :::
 
 ---
 
 ## Up Next
 
-Post 16 is Vertex Cover. We already saw Vertex Cover in Post 11 as the opposite side of Independent Set. Now we prove it is NP-Complete in its own right, through a reduction that connects directly back to Clique. The gap between these two problems is exactly one complement operation, and that observation will make the proof almost automatic.
+Post 16 is the Vertex Cover problem. You have already met it in Post 11, as the complementary problem to Independent Set. Now we will prove it NP-Complete directly. The reduction from Clique is almost immediate, because of a relationship between cliques and independent sets that Post 11 already showed you.
 
 See you there. 🚀
 
